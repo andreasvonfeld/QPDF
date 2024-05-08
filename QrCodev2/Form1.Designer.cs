@@ -29,6 +29,7 @@ namespace QrCodev2
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -350,6 +351,7 @@ namespace QrCodev2
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btn_Generer);
             this.Controls.Add(this.btn_Ajouter);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.Name = "Form1";
             this.Text = "Générer le PDF des plaques";
