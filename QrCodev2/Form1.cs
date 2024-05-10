@@ -18,6 +18,7 @@ namespace QrCodev2
 {
     public partial class Form1 : Form
     {
+        private int ancienneValeurNumeroFinLigne1 = 0;
         string imagePath;
         public Form1()
         {
@@ -36,85 +37,103 @@ namespace QrCodev2
 
         private void btn_Generer_Click(object sender, EventArgs e)
         {
-            try
+
+            float imageWidthCm = float.Parse(txt_largeurPlaque.Text); // Largeur de l'image en centimètres
+            float imageHeightCm = float.Parse(txt_hauteurPlaque.Text); // Hauteur de l'image en centimètres
+            float marginCm = float.Parse(txt_margePlaque.Text); // Marge en centimètres
+            int totalWidthCm = int.Parse(txt_largeurDocument.Text); // Largeur totale du document en centimètres
+            int totalHeightCm = int.Parse(txt_hauteurDocument.Text); // Hauteur totale du document en centimètres
+
+            // Calcul du nombre de plaques par ligne
+            int plaquesPerLine = (int)((totalWidthCm - marginCm) / (imageWidthCm + marginCm));
+
+            // Création du document PDF
+            PdfDocument document = new PdfDocument();
+            PdfPage page = document.AddPage();
+
+            // Définir la taille de la page
+            page.Width = XUnit.FromCentimeter(totalWidthCm);
+            page.Height = XUnit.FromCentimeter(totalHeightCm);
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+
+            // Chargement et dessin de l'image à superposer (QR Code)
+            XImage overlayImage = XImage.FromFile(@"C:\Users\Andréas\Desktop\thumbnail_0346.png");
+
+            // Paramètres pour la superposition
+            double overlayWidth = 74; // en pixels
+            double overlayHeight = 74; // en pixels
+
+            for (int i = 0; i < int.Parse(nup_NbrExemplaire.Text); i++)
             {
-                float imageWidthCm = float.Parse(txt_largeurPlaque.Text); // Largeur de l'image en centimètres
-                float imageHeightCm = float.Parse(txt_hauteurPlaque.Text); // Hauteur de l'image en centimètres
-                float marginCm = float.Parse(txt_margePlaque.Text); // Marge en centimètres
-                int totalWidthCm = int.Parse(txt_largeurDocument.Text); // Largeur totale du document en centimètres
-                int totalHeightCm = int.Parse(txt_hauteurDocument.Text); // Hauteur totale du document en centimètres
+                int row = i / plaquesPerLine;
+                int col = i % plaquesPerLine;
 
-                // Calcul du nombre de plaques par ligne
-                int plaquesPerLine = (int)((totalWidthCm - marginCm) / (imageWidthCm + marginCm));
+                // Positionnement des plaques avec marge
+                double x = col * (imageWidthCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
+                double y = row * (imageHeightCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
 
-                // Création du document PDF
-                PdfDocument document = new PdfDocument();
-                PdfPage page = document.AddPage();
+                imagePath = dgv_recap.Rows[0].Cells[1].Value.ToString();
 
-                // Définir la taille de la page
-                page.Width = XUnit.FromCentimeter(totalWidthCm);
-                page.Height = XUnit.FromCentimeter(totalHeightCm);
-                XGraphics gfx = XGraphics.FromPdfPage(page);
+                // Chargement et dessin de l'image principale
+                XImage image = XImage.FromFile(imagePath);
+                gfx.DrawImage(image, x, y, imageWidthCm * 28.3465, imageHeightCm * 28.3465);
 
-                // Chargement et dessin de l'image à superposer (QR Code)
-                XImage overlayImage = XImage.FromFile(@"C:\Users\andre\OneDrive\Desktop\thumbnail_0346.png");
+                // Dessiner le QR code
+                double overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - 40; // Marge de droite ajustée
+                double overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - 67; // Marge de bas ajustée
+                gfx.DrawImage(overlayImage, overlayX, overlayY, overlayWidth, overlayHeight);
 
-                // Paramètres pour la superposition
-                double overlayWidth = 74; // en pixels
-                double overlayHeight = 74; // en pixels
-
-                for (int i = 0; i < int.Parse(txt_nbrExemplaire.Text); i++)
-                {
-                    int row = i / plaquesPerLine;
-                    int col = i % plaquesPerLine;
-
-                    // Positionnement des plaques avec marge
-                    double x = col * (imageWidthCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
-                    double y = row * (imageHeightCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
-
-                    // Chargement et dessin de l'image principale
-                    XImage image = XImage.FromFile(imagePath);
-                    gfx.DrawImage(image, x, y, imageWidthCm * 28.3465, imageHeightCm * 28.3465);
-
-                    // Dessiner le QR code
-                    double overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - 40; // Marge de droite ajustée
-                    double overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - 67; // Marge de bas ajustée
-                    gfx.DrawImage(overlayImage, overlayX, overlayY, overlayWidth, overlayHeight);
-
-                    // Ajouter le numéro sur chaque plaque
-                    string plaqueNumber = (int.Parse(txt_numDepart.Text) + i).ToString();
-                    XSize textSize = gfx.MeasureString(plaqueNumber, new XFont("Verdana", 20));
-                    double textX = x + (imageWidthCm * 28.3465) - textSize.Width - 50; // Marge de droite pour le texte
-                    double textY = y + 190; // Position verticale du texte ajustée
-                    gfx.DrawString(plaqueNumber, new XFont("Poppins-SemiBold", 6), XBrushes.Black, new XPoint(textX, textY));
-                }
-
-                // Enregistrement du PDF
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "Fichiers PDF (*.pdf)|*.pdf|Tous les fichiers (*.*)|*.*";
-                saveFileDialog.Title = "Enregistrer le fichier PDF";
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    document.Save(saveFileDialog.FileName);
-                }
+                // Ajouter le numéro sur chaque plaque
+                string plaqueNumber = (int.Parse(txt_numDepart.Text) + i).ToString();
+                XSize textSize = gfx.MeasureString(plaqueNumber, new XFont("Verdana", 20));
+                double textX = x + (imageWidthCm * 28.3465) - textSize.Width - 50; // Marge de droite pour le texte
+                double textY = y + 190; // Position verticale du texte ajustée
+                gfx.DrawString(plaqueNumber, new XFont("Poppins-SemiBold", 6), XBrushes.Black, new XPoint(textX, textY));
             }
-            catch (Exception)
+
+            // Enregistrement du PDF
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Fichiers PDF (*.pdf)|*.pdf|Tous les fichiers (*.*)|*.*";
+            saveFileDialog.Title = "Enregistrer le fichier PDF";
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                MessageBox.Show("Veuillez remplir correctement les champs");
+                document.Save(saveFileDialog.FileName);
             }
+
+
         }
-
+        private void GeneratePDF(string imagePath, int nombreExemplaires, int numeroDepart) { }
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
             lbl_chemin.Visible = false;
 
+            dgv_emplacement.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgv_recap.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
+            dgv_recap.AllowUserToOrderColumns = false;
+            nup_NbrExemplaire.Enabled = false;
+
+            nup_NbrExemplaire.Value = 1;
+
+
+
+            //colonnes du dgv recap
+
+            DataGridViewTextBoxColumn colonne0 = new DataGridViewTextBoxColumn();
+            colonne0.HeaderText = "Nom du fond";
+            colonne0.Name = "colonneFond";
+
+            dgv_recap.Columns.Add(colonne0);
+
             DataGridViewTextBoxColumn colonne1 = new DataGridViewTextBoxColumn();
-            colonne1.HeaderText = "Nom du fond";
-            colonne1.Name = "colonneFond";
+            colonne1.HeaderText = "Chemin du fond";
+            colonne1.Name = "colonneChemin";
 
             dgv_recap.Columns.Add(colonne1);
+
+            colonne1.Visible = true;
 
             DataGridViewTextBoxColumn colonne2 = new DataGridViewTextBoxColumn();
             colonne2.HeaderText = "Nombre";
@@ -134,6 +153,20 @@ namespace QrCodev2
 
             dgv_recap.Columns.Add(colonne4);
 
+            // colonnes du dgv emplacement
+
+            DataGridViewTextBoxColumn colonne00 = new DataGridViewTextBoxColumn();
+            colonne00.HeaderText = "Nom du fond";
+            colonne00.Name = "colonneFond";
+
+            dgv_emplacement.Columns.Add(colonne00);
+
+            DataGridViewTextBoxColumn colonne01 = new DataGridViewTextBoxColumn();
+            colonne01.HeaderText = "Chemin du fichier";
+            colonne01.Name = "colonneChemin";
+
+            dgv_emplacement.Columns.Add(colonne01);
+
 
         }
 
@@ -152,27 +185,32 @@ namespace QrCodev2
             // Assurez-vous d'avoir ajouté la colonne du nom du fichier et du nombre d'exemplaires précédemment
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = false; // Assurez-vous que l'utilisateur ne peut sélectionner qu'un seul fichier
-            openFileDialog.Filter = "All Files|*.*"; // Filtre pour tous les types de fichiers
+            openFileDialog.Filter = "PDF Files|*.pdf"; // Filtre pour les fichiers PDF uniquement
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 // Récupérer le chemin du fichier sélectionné
                 string cheminFichier = openFileDialog.FileName;
 
+                // Récupérer le nom du fichier à partir du chemin complet
+                string nomFichier = Path.GetFileName(cheminFichier);
+
                 // Création d'une nouvelle ligne
                 DataGridViewRow row = new DataGridViewRow();
 
                 // Création de la cellule pour le nom du fichier
                 DataGridViewTextBoxCell celluleNomFichier = new DataGridViewTextBoxCell();
-                celluleNomFichier.Value = Path.GetFileName(cheminFichier);
+                celluleNomFichier.Value = nomFichier;
                 row.Cells.Add(celluleNomFichier);
 
-                // Stocker le chemin du fichier dans la cellule
-                row.Tag = cheminFichier;
+                // Création de la cellule pour le chemin complet du fichier
+                DataGridViewTextBoxCell celluleCheminFichier = new DataGridViewTextBoxCell();
+                celluleCheminFichier.Value = cheminFichier;
+                row.Cells.Add(celluleCheminFichier);
 
                 // Création de la cellule pour le nombre d'exemplaires
                 DataGridViewTextBoxCell celluleNombreExemplaires = new DataGridViewTextBoxCell();
-                celluleNombreExemplaires.Value = txt_nbrExemplaire.Text; // Vous pouvez modifier le nombre d'exemplaires selon vos besoins
+                celluleNombreExemplaires.Value = nup_NbrExemplaire.Text; // Vous pouvez modifier le nombre d'exemplaires selon vos besoins
                 row.Cells.Add(celluleNombreExemplaires);
 
                 if (row.Cells.Count > 0)
@@ -184,13 +222,300 @@ namespace QrCodev2
                     MessageBox.Show("La ligne ne contient pas de cellules.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
+
+
             }
-        } 
+        }
 
 
-            private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_Parcourir_Click(object sender, EventArgs e)
+        {
+            // Effacer le contenu actuel de dgv_emplacement
+            dgv_emplacement.Rows.Clear();
+
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            folderBrowserDialog.Description = "Sélectionnez un dossier contenant les fichiers à ajouter";
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                string dossierSelectionne = folderBrowserDialog.SelectedPath;
+
+                // Définir les extensions de fichiers autorisées
+                string[] extensionsAutorisees = new string[] { ".pdf", ".png", ".jpg", ".jpeg", ".svg" };
+
+                // Récupérer les fichiers dans le dossier sélectionné avec les extensions autorisées
+                string[] fichiersDansDossier = Directory.GetFiles(dossierSelectionne)
+                    .Where(fichier => extensionsAutorisees.Contains(Path.GetExtension(fichier).ToLower()))
+                    .ToArray();
+
+                foreach (string fichier in fichiersDansDossier)
+                {
+                    string nomFichier = Path.GetFileName(fichier);
+
+                    DataGridViewRow row = new DataGridViewRow();
+                    row.CreateCells(dgv_emplacement);
+                    row.Cells[0].Value = nomFichier;
+                    row.Cells[1].Value = fichier;
+
+                    dgv_emplacement.Rows.Add(row);
+                }
+
+                dgv_recap.Refresh();
+            }
+        }
+
+
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void btn_Deplacer_Click(object sender, EventArgs e)
+        {
+            DesactiverModifierBtn();
+
+            if (dgv_recap.Rows.Count == 1)
+            {
+                // Récupérer la valeur de la colonne "Numéro de départ" de la première ligne
+                string numeroDepart = dgv_recap.Rows[0].Cells[3].Value?.ToString();
+
+                // Vérifier si la valeur est vide
+                if (string.IsNullOrEmpty(numeroDepart))
+                {
+                    // Désactiver le bouton Modifier
+                    btn_Modifier.Enabled = false;
+                }
+                else
+                {
+                    // Activer le bouton Modifier
+                    btn_Modifier.Enabled = true;
+                }
+            }
+
+            if (dgv_emplacement.SelectedRows.Count > 0)
+            {
+                // Récupérer la ligne sélectionnée
+                DataGridViewRow selectedRow = dgv_emplacement.SelectedRows[0];
+
+                // Récupérer les valeurs des cellules de la ligne sélectionnée
+                string nomFichier = selectedRow.Cells[0].Value.ToString();
+                string cheminFichier = selectedRow.Cells[1].Value.ToString();
+                string nbrExemplaire = nup_NbrExemplaire.Value.ToString();
+
+                // Créer une nouvelle ligne dans dgv_recap avec les mêmes valeurs
+                DataGridViewRow newRow = new DataGridViewRow();
+                newRow.CreateCells(dgv_recap);
+                newRow.Cells[0].Value = nomFichier;
+                newRow.Cells[1].Value = cheminFichier;
+                newRow.Cells[2].Value = nbrExemplaire;
+
+                if (dgv_recap.Rows.Count > 1)
+                {
+                    // Récupérer l'index de la dernière ligne
+                    int derniereLigne = dgv_recap.Rows.Count - 2;
+
+                    if (dgv_recap.Rows[derniereLigne].Cells[4].Value != null)
+                    {
+                        // Récupérer la valeur de la colonne 3 de la dernière ligne
+                        int numeroFin = int.Parse(dgv_recap.Rows[derniereLigne].Cells[4].Value.ToString());
+
+                        // Mettre à jour la valeur de la colonne 2 de la nouvelle ligne avec la valeur de la colonne 3 de la dernière ligne
+                        newRow.Cells[3].Value = numeroFin + 1;
+                    }
+                    else { MessageBox.Show("La colonne 'Numéro de départ' doit être renseignée"); }
+
+                }
+
+                // Ajouter la nouvelle ligne à dgv_recap
+                dgv_recap.Rows.Add(newRow);
+
+                // Supprimer la ligne sélectionnée de dgv_emplacement
+                dgv_emplacement.Rows.Remove(selectedRow);
+            }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner une ligne dans dgv_emplacement.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+        }
+
+        private void DesactiverModifierBtn()
+        {
+            if (dgv_recap.Rows.Count > 1)
+            {
+                btn_Modifier2.Enabled = false;
+                if (dgv_recap.SelectedRows[0].Index == 0)
+                {
+                    btn_Modifier2.Enabled = true;
+                }
+
+            }
+            else
+            {
+                btn_Modifier2.Enabled = true;
+            }
+        }
+
+        private void dup_NbrExemplaire_SelectedItemChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dup_NbrExemplaire_MouseUp(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void btn_Modifier_Click(object sender, EventArgs e)
+        {
+            // Vérifier si une ligne est sélectionnée dans dgv_recap
+            if (dgv_recap.SelectedRows.Count > 0)
+            {
+                // Récupérer la ligne sélectionnée
+                DataGridViewRow selectedRow = dgv_recap.SelectedRows[0];
+
+                // Récupérer la valeur de dup_NbrExemplaire
+                string nouveauNombreExemplaires = nup_NbrExemplaire.Value.ToString();
+
+                // Modifier le contenu de la colonne 3 avec le nouveau nombre d'exemplaires
+                selectedRow.Cells[2].Value = nouveauNombreExemplaires;
+
+
+            }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner une ligne dans dgv_recap.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            MajNumeroFin();
+        }
+
+        private void btn_Modifier2_Click(object sender, EventArgs e)
+        {
+            MajNumeroFin();
+
+            if (dgv_recap.Rows.Count > 0)
+            {
+                // Récupérer la valeur de la colonne "Numéro de départ" de la première ligne
+                string numeroDepart = dgv_recap.Rows[0].Cells[3].Value?.ToString();
+
+                // Vérifier si la valeur est vide
+                if (string.IsNullOrEmpty(numeroDepart))
+                {
+                    // Désactiver le bouton Modifier
+                    btn_Modifier.Enabled = false;
+                    nup_NbrExemplaire.Enabled = false;
+                }
+                else
+                {
+                    // Activer le bouton Modifier
+                    btn_Modifier.Enabled = true;
+                    nup_NbrExemplaire.Enabled = true;
+                }
+            }
+        }
+
+        private void dgv_recap_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dgv_recap_MouseClick(object sender, MouseEventArgs e)
+        {
+            DesactiverModifierBtn();
+        }
+
+        private void MajNumeroFin()
+        {
+            // Vérifier si une ligne est sélectionnée dans dgv_recap
+            if (dgv_recap.SelectedRows.Count > 0)
+            {
+                // Récupérer la ligne sélectionnée
+                DataGridViewRow selectedRow = dgv_recap.SelectedRows[0];
+
+                if (dgv_recap.SelectedRows[0].Index == 0)
+                {
+                    // Récupérer la valeur de txt_numero
+                    string numDepart = txt_numDepart.Text;
+
+                    // Modifier le contenu de la colonne 3 avec le nouveau numéro de départ
+                    selectedRow.Cells[3].Value = numDepart;
+
+                    // Calculer et modifier le contenu de la colonne 4 avec l'addition du numéro de départ et du nombre d'exemplaires
+                    int nombreExemplaires = Convert.ToInt32(selectedRow.Cells[2].Value);
+                    int numeroDepart = Convert.ToInt32(numDepart);
+                    int total = numeroDepart + nombreExemplaires - 1;
+                    selectedRow.Cells[4].Value = total.ToString();
+
+
+
+                }
+                else
+                {
+                    // Récupérer la valeur de txt_numero
+                    string numDepart = selectedRow.Cells[3].Value.ToString();
+
+                    // Modifier le contenu de la colonne 3 avec le nouveau numéro de départ
+                    selectedRow.Cells[3].Value = numDepart;
+
+                    // Calculer et modifier le contenu de la colonne 4 avec l'addition du numéro de départ et du nombre d'exemplaires
+                    int nombreExemplaires = Convert.ToInt32(selectedRow.Cells[2].Value);
+                    int numeroDepart = Convert.ToInt32(numDepart);
+                    int total = numeroDepart + nombreExemplaires - 1;
+                    selectedRow.Cells[4].Value = total.ToString();
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("Veuillez sélectionner une ligne dans dgv_recap.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+        }
+
+        private void dgv_recap_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            // Vérifier si la cellule modifiée est dans la colonne "Numéro de fin" et si la ligne modifiée est la première ligne
+            if (e.ColumnIndex == 4 && e.RowIndex == 0)
+            {
+                // Récupérer la nouvelle valeur de la cellule "Numéro de fin"
+                object nouvelleValeurObj = dgv_recap.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+                if (nouvelleValeurObj != null)
+                {
+                    int nouvelleValeur;
+                    // Vérifier si la nouvelle valeur peut être convertie en entier
+                    if (int.TryParse(nouvelleValeurObj.ToString(), out nouvelleValeur))
+                    {
+                        // Récupérer la ligne suivante
+                        DataGridViewRow ligneSuivante = dgv_recap.Rows[e.RowIndex + 1];
+
+                        // Vérifier si la ligne suivante n'est pas la dernière ligne (la ligne vide)
+                        if (ligneSuivante.Index != dgv_recap.Rows.Count - 1)
+                        {
+                            // Mettre à jour la valeur de la cellule "Numéro de départ" de la ligne suivante
+                            ligneSuivante.Cells[3].Value = nouvelleValeur + 1;
+                        }
+                    }
+                }
+            }
+        }
+            private void nup_NbrExemplaire_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btn_supprimer_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }
