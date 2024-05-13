@@ -13,6 +13,8 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using System.IO;
 using PdfSharpCore.Pdf.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace QrCodev2
 {
@@ -37,61 +39,79 @@ namespace QrCodev2
 
         private void btn_Generer_Click(object sender, EventArgs e)
         {
+            float imageWidthCm = float.Parse(txt_largeurPlaque.Text);
+            float imageHeightCm = float.Parse(txt_hauteurPlaque.Text);
+            float marginCm = float.Parse(txt_margePlaque.Text);
+            int totalWidthCm = int.Parse(txt_largeurDocument.Text);
+            int totalHeightCm = int.Parse(txt_hauteurDocument.Text);
 
-            float imageWidthCm = float.Parse(txt_largeurPlaque.Text); // Largeur de l'image en centimètres
-            float imageHeightCm = float.Parse(txt_hauteurPlaque.Text); // Hauteur de l'image en centimètres
-            float marginCm = float.Parse(txt_margePlaque.Text); // Marge en centimètres
-            int totalWidthCm = int.Parse(txt_largeurDocument.Text); // Largeur totale du document en centimètres
-            int totalHeightCm = int.Parse(txt_hauteurDocument.Text); // Hauteur totale du document en centimètres
-
-            // Calcul du nombre de plaques par ligne
-            int plaquesPerLine = (int)((totalWidthCm - marginCm) / (imageWidthCm + marginCm));
-
-            // Création du document PDF
             PdfDocument document = new PdfDocument();
             PdfPage page = document.AddPage();
-
-            // Définir la taille de la page
             page.Width = XUnit.FromCentimeter(totalWidthCm);
             page.Height = XUnit.FromCentimeter(totalHeightCm);
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            // Chargement et dessin de l'image à superposer (QR Code)
-            XImage overlayImage = XImage.FromFile(@"C:\Users\Andréas\Desktop\thumbnail_0346.png");
+            int plaquesPerLine = (int)((totalWidthCm - marginCm) / (imageWidthCm + marginCm));
 
-            // Paramètres pour la superposition
-            double overlayWidth = 74; // en pixels
-            double overlayHeight = 74; // en pixels
+            int currentRow = 0;
+            int currentCol = 0;
+            int plaqueNumber = int.Parse(txt_numDepart.Text);
 
-            for (int i = 0; i < int.Parse(nup_NbrExemplaire.Text); i++)
+            foreach (DataGridViewRow dgvRow in dgv_recap.Rows)
             {
-                int row = i / plaquesPerLine;
-                int col = i % plaquesPerLine;
+                string imagePath = dgvRow.Cells["colonneChemin"].Value?.ToString();
 
-                // Positionnement des plaques avec marge
-                double x = col * (imageWidthCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
-                double y = row * (imageHeightCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
+                if (!string.IsNullOrEmpty(imagePath))
+                {
+                    int nombreExemplaires = Convert.ToInt32(dgvRow.Cells["colonneNombre"].Value);
+                    int numeroDepart = Convert.ToInt32(dgvRow.Cells["colonneNumDep"].Value);
 
-                imagePath = dgv_recap.Rows[0].Cells[1].Value.ToString();
+                    for (int i = 0; i < nombreExemplaires; i++)
+                    {
+                        double x = currentCol * (imageWidthCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
+                        double y = currentRow * (imageHeightCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
 
-                // Chargement et dessin de l'image principale
-                XImage image = XImage.FromFile(imagePath);
-                gfx.DrawImage(image, x, y, imageWidthCm * 28.3465, imageHeightCm * 28.3465);
+                        XImage image = XImage.FromFile(imagePath);
+                        gfx.DrawImage(image, x, y, imageWidthCm * 28.3465, imageHeightCm * 28.3465);
 
-                // Dessiner le QR code
-                double overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - 40; // Marge de droite ajustée
-                double overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - 67; // Marge de bas ajustée
-                gfx.DrawImage(overlayImage, overlayX, overlayY, overlayWidth, overlayHeight);
 
-                // Ajouter le numéro sur chaque plaque
-                string plaqueNumber = (int.Parse(txt_numDepart.Text) + i).ToString();
-                XSize textSize = gfx.MeasureString(plaqueNumber, new XFont("Verdana", 20));
-                double textX = x + (imageWidthCm * 28.3465) - textSize.Width - 50; // Marge de droite pour le texte
-                double textY = y + 190; // Position verticale du texte ajustée
-                gfx.DrawString(plaqueNumber, new XFont("Poppins-SemiBold", 6), XBrushes.Black, new XPoint(textX, textY));
+                        // Chargement et dessin du QR Code à superposer
+                        XImage overlayImage = XImage.FromFile(@"C:\Users\andre\OneDrive\Desktop\thumbnail_0346.png");
+
+                        // Paramètres pour la superposition
+                        double overlayWidth = 74; // en pixels
+                        double overlayHeight = 74; // en pixels
+
+                        // Dessiner le QR code
+                        double overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - 40; // Marge de droite ajustée
+                        double overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - 67; // Marge de bas ajustée
+                        gfx.DrawImage(overlayImage, overlayX, overlayY, overlayWidth, overlayHeight);
+
+                        // Récupérer la taille du texte
+                        XSize textSize = gfx.MeasureString(plaqueNumber.ToString(), new XFont("Arial", 10));
+
+                        // Calculer la position x pour centrer le texte horizontalement
+                        double plaqueNumberX = x + (imageWidthCm * 28.3465) / 2 - textSize.Width / 2 + 48.5;
+
+                        // Calculer la position y pour positionner le texte juste au-dessus du QR code
+                        double plaqueNumberY = overlayY + 90; // ajuster la position verticalement si nécessaire
+
+                        // Dessiner le numéro de plaque
+                        gfx.DrawString(plaqueNumber.ToString(), new XFont("Poppins - SemiBold", 6), XBrushes.Black, plaqueNumberX, plaqueNumberY);
+
+                        plaqueNumber++;
+
+                        currentCol++;
+
+                        if (currentCol >= plaquesPerLine)
+                        {
+                            currentCol = 0;
+                            currentRow++;
+                        }
+                    }
+                }
             }
 
-            // Enregistrement du PDF
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Fichiers PDF (*.pdf)|*.pdf|Tous les fichiers (*.*)|*.*";
             saveFileDialog.Title = "Enregistrer le fichier PDF";
@@ -99,9 +119,11 @@ namespace QrCodev2
             {
                 document.Save(saveFileDialog.FileName);
             }
-
-
         }
+
+
+
+
         private void GeneratePDF(string imagePath, int nombreExemplaires, int numeroDepart) { }
 
 
@@ -335,8 +357,7 @@ namespace QrCodev2
                 // Ajouter la nouvelle ligne à dgv_recap
                 dgv_recap.Rows.Add(newRow);
 
-                // Supprimer la ligne sélectionnée de dgv_emplacement
-                dgv_emplacement.Rows.Remove(selectedRow);
+                
             }
             else
             {
@@ -515,7 +536,21 @@ namespace QrCodev2
 
         private void btn_supprimer_Click(object sender, EventArgs e)
         {
-            
+            // Vérifier si une ligne est sélectionnée dans dgv_recap
+            if (dgv_recap.SelectedRows.Count > 0)
+            {
+                int NombreLignes = dgv_recap.SelectedRows.Count;
+
+                // Utiliser une boucle for descendante pour éviter les problèmes d'index lors de la suppression
+                for (int k = NombreLignes - 1; k >= 0; k--)
+                {
+                    // Récupérer la ligne sélectionnée
+                    DataGridViewRow selectedRow = dgv_recap.SelectedRows[k];
+
+                    // Supprimer la ligne du DataGridView
+                    dgv_recap.Rows.Remove(selectedRow);
+                }
+            }
         }
     }
 }
