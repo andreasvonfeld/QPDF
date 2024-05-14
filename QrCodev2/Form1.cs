@@ -14,7 +14,8 @@ using PdfSharpCore.Pdf;
 using System.IO;
 using PdfSharpCore.Pdf.IO;
 using System.Net.Http;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using Svg;
 
 namespace QrCodev2
 {
@@ -23,14 +24,15 @@ namespace QrCodev2
     {
         private readonly HttpClient _client;
 
-        
+
         public Form1()
         {
             InitializeComponent();
             // Initialisation de _client
             _client = new HttpClient();
-            string apiKey = "key";
+            string apiKey = "KEY";
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
 
         }
 
@@ -81,154 +83,134 @@ namespace QrCodev2
                         XImage image = XImage.FromFile(imagePath);
                         gfx.DrawImage(image, x, y, imageWidthCm * 28.3465, imageHeightCm * 28.3465);
 
+                        int currentNumero = numeroDepart + i;  // Calcul du numéro pour cette plaque
+                        string customUrl = $"https://www.qrcode.mediapush.fr/{currentNumero}";  // Construction de l'URL avec le numéro
 
-                        // Chargement et dessin du QR Code à superposer
-                        XImage overlayImage = XImage.FromFile(@"C:\Users\andre\OneDrive\Desktop\thumbnail_0346.png");
+                        int linkId = await CreateLinkAsync(currentNumero); // Utilisation du numéro actuel comme paramètre
 
-                        // Paramètres pour la superposition
-                        double overlayWidth = 74; // en pixels
-                        double overlayHeight = 74; // en pixels
 
-                        // Dessiner le QR code
-                        double overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - 40; // Marge de droite ajustée
-                        double overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - 67; // Marge de bas ajustée
+                        // Use the linkId to create the QR code
+                        int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero);  // Modification pour passer l'URL
+
+                        // Load and draw the QR Code
+                        XImage overlayImage = await GetQrCodeImageAsync(qrCodeId);
+                        double overlayWidth = 74; // in pixels
+                        double overlayHeight = 74; // in pixels
+                        double overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - 40; // Adjust right margin
+                        double overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - 67; // Adjust bottom margin
                         gfx.DrawImage(overlayImage, overlayX, overlayY, overlayWidth, overlayHeight);
 
-                        // Récupérer la taille du texte
+                        // Draw plaque number
                         XSize textSize = gfx.MeasureString(plaqueNumber.ToString(), new XFont("Arial", 10));
-
-                        // Calculer la position x pour centrer le texte horizontalement
                         double plaqueNumberX = x + (imageWidthCm * 28.3465) / 2 - textSize.Width / 2 + 48.5;
-
-                        // Calculer la position y pour positionner le texte juste au-dessus du QR code
-                        double plaqueNumberY = overlayY + 90; // ajuster la position verticalement si nécessaire
-
-                        // Dessiner le numéro de plaque
+                        double plaqueNumberY = overlayY + 90; // Adjust vertical position if necessary
                         gfx.DrawString(plaqueNumber.ToString(), new XFont("Poppins - SemiBold", 6), XBrushes.Black, plaqueNumberX, plaqueNumberY);
-
-                        string locationUrl = "https://www.qrcode.mediapush.fr/api/links";
-                        string customUrl = (int.Parse(txt_numDepart.Text) + i).ToString();
-
-                        // Appel de la méthode CreateLinkAsync pour créer un lien
-                        int linkId = await CreateLinkAsync(locationUrl, customUrl);
-
-                        // Utilisation de l'ID du lien, si nécessaire
-                        //MessageBox.Show($"Lien créé avec l'ID : {linkId}");
-
-                        // Utiliser l'URL retournée par la méthode CreateLinkAsync pour créer le QR code
-                        string qrCodeUrl = $"https://www.qrcode.mediapush.fr/api/qr-codes"; // Exemple d'URL, veuillez remplacer par l'URL correcte
-
-                        string nomQR = (int.Parse(txt_numDepart.Text) + i).ToString();
-
-                        // Utilisation de l'ID du lien pour créer le QR code avec le link_id
-                        int qrCodeId = await CreateQrCodeAsync(nomQR, "url", linkId);
-
-                        // Utilisez l'ID du QR code si nécessaire
-                        //MessageBox.Show($"QR code créé avec l'ID : {qrCodeId}");
 
                         plaqueNumber++;
 
                         currentCol++;
-
                         if (currentCol >= plaquesPerLine)
                         {
                             currentCol = 0;
                             currentRow++;
                         }
                     }
+
                 }
             }
-            
-
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Fichiers PDF (*.pdf)|*.pdf|Tous les fichiers (*.*)|*.*";
-            saveFileDialog.Title = "Enregistrer le fichier PDF";
+            saveFileDialog.Filter = "PDF Files (*.pdf)|*.pdf|All Files (*.*)|*.*";
+            saveFileDialog.Title = "Save PDF File";
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 document.Save(saveFileDialog.FileName);
             }
         }
-
-        public async Task<int> CreateQrCodeAsync(string name, string type, int linkId)
+        public static void ConvertSvgToPdf(string svgContent, string pdfOutputPath)
         {
-            // Construire l'URL avec l'ID du lien inclus
-            string url = $"https://www.qrcode.mediapush.fr/{linkId}";
+            // Créer un objet SVG à partir du contenu SVG
+            var svgDocument = SvgDocument.FromSvg<SvgDocument>(svgContent);
 
-            // Créer le contenu multipart/form-data
-            var content = new MultipartFormDataContent();
+            // Dessiner le SVG en bitmap
+            using (var bitmap = svgDocument.Draw())
+            {
+                // Créer un nouveau document PDF
+                PdfSharpCore.Pdf.PdfDocument pdf = new PdfSharpCore.Pdf.PdfDocument();
+                pdf.Info.Title = "SVG to PDF";
+                PdfSharpCore.Pdf.PdfPage page = pdf.AddPage();
+                page.Width = bitmap.Width;
+                page.Height = bitmap.Height;
 
-            // Ajouter les paramètres requis à envoyer dans la requête
-            content.Add(new StringContent(name), "name");
-            content.Add(new StringContent(type), "type");
-            content.Add(new StringContent(url), "url");
+                XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            // URL de l'API pour la création de codes QR
+                // Convertir le Bitmap en MemoryStream PNG
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                    stream.Position = 0; // Remettre le curseur du stream au début pour la lecture
+
+                    // Utilisation d'une fonction lambda pour créer XImage
+                    XImage image = XImage.FromStream(() => new MemoryStream(stream.ToArray()));
+
+                    // Dessiner l'image bitmap dans le document PDF
+                    gfx.DrawImage(image, 0, 0, bitmap.Width, bitmap.Height);
+                }
+
+                // Sauvegarder le PDF
+                pdf.Save(pdfOutputPath);
+            }
+        }
+        public async Task<int> CreateQrCodeAsync(string name, string type, int numeroDepart)
+        {
+            string url = $"https://www.qrcode.mediapush.fr/{numeroDepart}";
+            var content = new MultipartFormDataContent
+    {
+        { new StringContent(name), "name" },
+        { new StringContent(type), "type" },
+        { new StringContent(url), "url" }
+    };
+
             var apiUrl = "https://www.qrcode.mediapush.fr/api/qr-codes";
 
             try
             {
-                // Envoi de la requête POST à l'API avec le contenu multipart/form-data
-                HttpResponseMessage response = await HttpClientSingleton.Instance.PostAsync(apiUrl, content);
-
-                // Vérification de la réussite de la requête
+                HttpResponseMessage response = await _client.PostAsync(apiUrl, content);
                 response.EnsureSuccessStatusCode();
 
-                // Lecture de la réponse de l'API
                 var responseBody = await response.Content.ReadAsStringAsync();
-
-                // Extraction de l'ID du code QR créé à partir de la réponse JSON
                 dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
-                int qrCodeId = responseObject.data.id;
-
-                // Renvoi de l'ID du code QR créé
-                return qrCodeId;
+                return responseObject.data.id;
             }
             catch (HttpRequestException ex)
             {
-                // Gérer les erreurs HTTP ici
-                Console.WriteLine($"Une erreur s'est produite lors de l'appel à l'API : {ex.Message}");
+                Console.WriteLine($"API error: {ex.Message}");
                 throw;
             }
         }
 
-        public async Task<int> CreateLinkAsync(string locationUrl, string url = "")
+        public async Task<int> CreateLinkAsync(int currentNumero)
         {
-            // Création du contenu multipart/form-data
-            var content = new MultipartFormDataContent();
+            var content = new MultipartFormDataContent
+    {
+        { new StringContent("https://mediapush.fr"), "location_url" },
+        { new StringContent(currentNumero.ToString()), "url" }
+    };
 
-            // Ajout des paramètres requis à envoyer dans la requête
-            content.Add(new StringContent(locationUrl), "location_url");
-            if (!string.IsNullOrEmpty(url))
-            {
-                content.Add(new StringContent(url), "url");
-            }
-
-            // URL de l'API pour la création de liens
             var apiUrl = "https://www.qrcode.mediapush.fr/api/links";
 
             try
             {
-                // Envoi de la requête POST à l'API avec le contenu multipart/form-data
                 HttpResponseMessage response = await _client.PostAsync(apiUrl, content);
-
-                // Vérification de la réussite de la requête
                 response.EnsureSuccessStatusCode();
 
-                // Lecture de la réponse de l'API
                 var responseBody = await response.Content.ReadAsStringAsync();
-
-                // Extraction de l'ID du lien créé à partir de la réponse JSON
                 dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
-                int linkId = responseObject.data.id;
-
-                // Renvoi de l'ID du lien créé
-                return linkId;
+                return responseObject.data.id;
             }
             catch (HttpRequestException ex)
             {
-                // Gérer les erreurs HTTP ici
-                Console.WriteLine($"Une erreur s'est produite lors de l'appel à l'API : {ex.Message}");
+                Console.WriteLine($"API error: {ex.Message}");
                 throw;
             }
         }
@@ -294,6 +276,16 @@ namespace QrCodev2
             colonne01.Name = "colonneChemin";
 
             dgv_emplacement.Columns.Add(colonne01);
+
+            // Ajouter une colonne d'image pour les miniatures
+            DataGridViewImageColumn imageColumn = new DataGridViewImageColumn();
+            imageColumn.HeaderText = "Prévisualisation";
+            imageColumn.Name = "colonneImage";
+            imageColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            imageColumn.Width = 50; // Largeur de la colonne pour les miniatures
+            dgv_emplacement.Columns.Add(imageColumn);
+
+            
 
 
         }
@@ -363,7 +355,6 @@ namespace QrCodev2
 
         private void btn_Parcourir_Click(object sender, EventArgs e)
         {
-            // Effacer le contenu actuel de dgv_emplacement
             dgv_emplacement.Rows.Clear();
 
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
@@ -392,6 +383,7 @@ namespace QrCodev2
                     row.CreateCells(dgv_emplacement);
                     row.Cells[0].Value = nomFichier;
                     row.Cells[1].Value = fichier;
+                    row.Cells[2].Value = CreateThumbnail(fichier); // Charger la miniature
 
                     dgv_emplacement.Rows.Add(row);
                 }
@@ -399,7 +391,41 @@ namespace QrCodev2
                 dgv_recap.Refresh();
             }
         }
+        private Image CreateThumbnail(string imagePath)
+        {
+            try
+            {
+                using (Image image = Image.FromFile(imagePath))
+                {
+                    int thumbnailSize = 50; // Taille de la miniature
+                    int width, height;
 
+                    if (image.Width > image.Height)
+                    {
+                        width = thumbnailSize;
+                        height = (int)(image.Height * thumbnailSize / (float)image.Width);
+                    }
+                    else
+                    {
+                        height = thumbnailSize;
+                        width = (int)(image.Width * thumbnailSize / (float)image.Height);
+                    }
+
+                    Bitmap thumbnail = new Bitmap(width, height);
+                    using (Graphics g = Graphics.FromImage(thumbnail))
+                    {
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        g.DrawImage(image, 0, 0, width, height);
+                    }
+
+                    return thumbnail;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -466,7 +492,7 @@ namespace QrCodev2
                 // Ajouter la nouvelle ligne à dgv_recap
                 dgv_recap.Rows.Add(newRow);
 
-                
+
             }
             else
             {
@@ -642,7 +668,7 @@ namespace QrCodev2
                 }
             }
         }
-            private void nup_NbrExemplaire_ValueChanged(object sender, EventArgs e)
+        private void nup_NbrExemplaire_ValueChanged(object sender, EventArgs e)
         {
 
         }
@@ -670,5 +696,62 @@ namespace QrCodev2
         {
 
         }
+
+        public async Task<XImage> GetQrCodeImageAsync(int qrCodeId)
+        {
+            string apiUrl = $"https://www.qrcode.mediapush.fr/api/qr-codes/{qrCodeId}";
+
+            try
+            {
+                HttpResponseMessage response = await _client.GetAsync(apiUrl);
+                if (!response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Failed to fetch QR code: {response.StatusCode} - {responseContent}");
+                    throw new Exception($"API call failed with status code {response.StatusCode}");
+                }
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+                JObject jsonResponse = JObject.Parse(responseBody);
+
+                if (jsonResponse["data"] == null || jsonResponse["data"]["qr_code"] == null)
+                {
+                    throw new Exception("QR code SVG URL not found in API response.");
+                }
+
+                string qrCodeUrl = jsonResponse["data"]["qr_code"].ToString();
+                HttpResponseMessage svgResponse = await _client.GetAsync(qrCodeUrl);
+                if (!svgResponse.IsSuccessStatusCode)
+                {
+                    throw new Exception("Failed to download QR code SVG.");
+                }
+
+                string svgContent = await svgResponse.Content.ReadAsStringAsync();
+                return ConvertSvgToXImage(svgContent);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Network error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error processing QR code SVG: {ex.Message}");
+            }
+        }
+        public static XImage ConvertSvgToXImage(string svgContent)
+        {
+            var svgDocument = SvgDocument.FromSvg<SvgDocument>(svgContent);
+            using (var bitmap = svgDocument.Draw())
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                    stream.Position = 0;
+                    // Utilisez une fonction lambda pour créer XImage à partir du MemoryStream
+                    return XImage.FromStream(() => new MemoryStream(stream.ToArray()));
+                }
+            }
+        }
     }
+  
 }

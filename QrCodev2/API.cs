@@ -24,7 +24,7 @@ namespace QrCodev2
                         if (_instance == null)
                         {
                             _instance = new HttpClient();
-                            string apiKey = "key";
+                            string apiKey = "KEY";
                             _instance.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
                         }
                     }
