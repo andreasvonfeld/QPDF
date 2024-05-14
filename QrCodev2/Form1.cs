@@ -18,13 +18,20 @@ using System.Threading.Tasks;
 
 namespace QrCodev2
 {
+
     public partial class Form1 : Form
     {
-        private int ancienneValeurNumeroFinLigne1 = 0;
-        string imagePath;
+        private readonly HttpClient _client;
+
+        
         public Form1()
         {
             InitializeComponent();
+            // Initialisation de _client
+            _client = new HttpClient();
+            string apiKey = "key";
+            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -37,7 +44,7 @@ namespace QrCodev2
 
         }
 
-        private void btn_Generer_Click(object sender, EventArgs e)
+        private async void btn_Generer_Click(object sender, EventArgs e)
         {
             float imageWidthCm = float.Parse(txt_largeurPlaque.Text);
             float imageHeightCm = float.Parse(txt_hauteurPlaque.Text);
@@ -99,6 +106,26 @@ namespace QrCodev2
                         // Dessiner le numéro de plaque
                         gfx.DrawString(plaqueNumber.ToString(), new XFont("Poppins - SemiBold", 6), XBrushes.Black, plaqueNumberX, plaqueNumberY);
 
+                        string locationUrl = "https://www.qrcode.mediapush.fr/api/links";
+                        string customUrl = (int.Parse(txt_numDepart.Text) + i).ToString();
+
+                        // Appel de la méthode CreateLinkAsync pour créer un lien
+                        int linkId = await CreateLinkAsync(locationUrl, customUrl);
+
+                        // Utilisation de l'ID du lien, si nécessaire
+                        //MessageBox.Show($"Lien créé avec l'ID : {linkId}");
+
+                        // Utiliser l'URL retournée par la méthode CreateLinkAsync pour créer le QR code
+                        string qrCodeUrl = $"https://www.qrcode.mediapush.fr/api/qr-codes"; // Exemple d'URL, veuillez remplacer par l'URL correcte
+
+                        string nomQR = (int.Parse(txt_numDepart.Text) + i).ToString();
+
+                        // Utilisation de l'ID du lien pour créer le QR code avec le link_id
+                        int qrCodeId = await CreateQrCodeAsync(nomQR, "url", linkId);
+
+                        // Utilisez l'ID du QR code si nécessaire
+                        //MessageBox.Show($"QR code créé avec l'ID : {qrCodeId}");
+
                         plaqueNumber++;
 
                         currentCol++;
@@ -111,6 +138,8 @@ namespace QrCodev2
                     }
                 }
             }
+            
+
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Fichiers PDF (*.pdf)|*.pdf|Tous les fichiers (*.*)|*.*";
@@ -121,11 +150,88 @@ namespace QrCodev2
             }
         }
 
+        public async Task<int> CreateQrCodeAsync(string name, string type, int linkId)
+        {
+            // Construire l'URL avec l'ID du lien inclus
+            string url = $"https://www.qrcode.mediapush.fr/{linkId}";
 
+            // Créer le contenu multipart/form-data
+            var content = new MultipartFormDataContent();
 
+            // Ajouter les paramètres requis à envoyer dans la requête
+            content.Add(new StringContent(name), "name");
+            content.Add(new StringContent(type), "type");
+            content.Add(new StringContent(url), "url");
 
-        private void GeneratePDF(string imagePath, int nombreExemplaires, int numeroDepart) { }
+            // URL de l'API pour la création de codes QR
+            var apiUrl = "https://www.qrcode.mediapush.fr/api/qr-codes";
 
+            try
+            {
+                // Envoi de la requête POST à l'API avec le contenu multipart/form-data
+                HttpResponseMessage response = await HttpClientSingleton.Instance.PostAsync(apiUrl, content);
+
+                // Vérification de la réussite de la requête
+                response.EnsureSuccessStatusCode();
+
+                // Lecture de la réponse de l'API
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                // Extraction de l'ID du code QR créé à partir de la réponse JSON
+                dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
+                int qrCodeId = responseObject.data.id;
+
+                // Renvoi de l'ID du code QR créé
+                return qrCodeId;
+            }
+            catch (HttpRequestException ex)
+            {
+                // Gérer les erreurs HTTP ici
+                Console.WriteLine($"Une erreur s'est produite lors de l'appel à l'API : {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> CreateLinkAsync(string locationUrl, string url = "")
+        {
+            // Création du contenu multipart/form-data
+            var content = new MultipartFormDataContent();
+
+            // Ajout des paramètres requis à envoyer dans la requête
+            content.Add(new StringContent(locationUrl), "location_url");
+            if (!string.IsNullOrEmpty(url))
+            {
+                content.Add(new StringContent(url), "url");
+            }
+
+            // URL de l'API pour la création de liens
+            var apiUrl = "https://www.qrcode.mediapush.fr/api/links";
+
+            try
+            {
+                // Envoi de la requête POST à l'API avec le contenu multipart/form-data
+                HttpResponseMessage response = await _client.PostAsync(apiUrl, content);
+
+                // Vérification de la réussite de la requête
+                response.EnsureSuccessStatusCode();
+
+                // Lecture de la réponse de l'API
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                // Extraction de l'ID du lien créé à partir de la réponse JSON
+                dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
+                int linkId = responseObject.data.id;
+
+                // Renvoi de l'ID du lien créé
+                return linkId;
+            }
+            catch (HttpRequestException ex)
+            {
+                // Gérer les erreurs HTTP ici
+                Console.WriteLine($"Une erreur s'est produite lors de l'appel à l'API : {ex.Message}");
+                throw;
+            }
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -267,6 +373,9 @@ namespace QrCodev2
             {
                 string dossierSelectionne = folderBrowserDialog.SelectedPath;
 
+                lbl_chemin.Text = dossierSelectionne;
+                lbl_chemin.Visible = true;
+
                 // Définir les extensions de fichiers autorisées
                 string[] extensionsAutorisees = new string[] { ".pdf", ".png", ".jpg", ".jpeg", ".svg" };
 
@@ -372,15 +481,19 @@ namespace QrCodev2
             if (dgv_recap.Rows.Count > 1)
             {
                 btn_Modifier2.Enabled = false;
+                txt_numDepart.Enabled = false;
+
                 if (dgv_recap.SelectedRows[0].Index == 0)
                 {
                     btn_Modifier2.Enabled = true;
+                    txt_numDepart.Enabled = true;
                 }
 
             }
             else
             {
                 btn_Modifier2.Enabled = true;
+                txt_numDepart.Enabled = true;
             }
         }
 
@@ -551,6 +664,11 @@ namespace QrCodev2
                     dgv_recap.Rows.Remove(selectedRow);
                 }
             }
+        }
+
+        private void lbl_chemin_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

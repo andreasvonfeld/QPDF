@@ -519,6 +519,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A4F71C5D68AB46A2A5016116AA526BBD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_AA0DCD679558C3AF3FE8E78A2F61AADB"
         "OwnerKey" = "8:_FED58B8B4DBA47EE8B92F70A5900EEC4"
         "MsmSig" = "8:_UNDEFINED"
@@ -759,6 +765,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E4B986282A16008057281E4AFFDCEC60"
+        "OwnerKey" = "8:_FED58B8B4DBA47EE8B92F70A5900EEC4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E4F0D0860191C68AA1771B78AEC22B3E"
         "OwnerKey" = "8:_FED58B8B4DBA47EE8B92F70A5900EEC4"
         "MsmSig" = "8:_UNDEFINED"
@@ -923,6 +935,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_B2D8B38F9013935DD3CE803A46157596"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E4B986282A16008057281E4AFFDCEC60"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1610,6 +1628,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -1634,6 +1660,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
     }
@@ -3978,6 +4012,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A4F71C5D68AB46A2A5016116AA526BBD"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\OneDrive\\Desktop\\c2644f94cfda9ba79a25b8e737bc5748.png"
+            "TargetName" = "8:mediapush"
+            "Tag" = "8:"
+            "Folder" = "8:_FF8F16155F6D49FB98A46CFBE4D2C037"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AA0DCD679558C3AF3FE8E78A2F61AADB"
             {
             "AssemblyRegister" = "3:1"
@@ -5032,6 +5086,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E4B986282A16008057281E4AFFDCEC60"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_E4B986282A16008057281E4AFFDCEC60"
+                    {
+                    "Name" = "8:Newtonsoft.Json.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Newtonsoft.Json.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_FF8F16155F6D49FB98A46CFBE4D2C037"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E4F0D0860191C68AA1771B78AEC22B3E"
             {
             "AssemblyRegister" = "3:1"
@@ -5500,7 +5585,7 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Générateur de QrCodes en PDF"
+        "Manufacturer" = "8:QPDF"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
         "Title" = "8:Setup"
