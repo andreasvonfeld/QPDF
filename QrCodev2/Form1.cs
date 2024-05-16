@@ -110,10 +110,10 @@ namespace QrCodev2
                                 gfx.DrawImage(overlayImage, overlayX, overlayY, overlayWidth, overlayHeight);
 
                                 // Ajout du numéro de plaque avec redimensionnement
-                                XFont font = new XFont("Poppins - SemiBold", 6 * heightRatio); // taille de police redimensionnée
+                                XFont font = new XFont("Poppins SemiBold", 4 * heightRatio); // taille de police redimensionnée
                                 XSize textSize = gfx.MeasureString(plaqueNumber.ToString(), font);
                                 double plaqueNumberX = x + (imageWidthCm * 28.3465) / 1.47 - textSize.Width / 2; // position X ajustée
-                                double plaqueNumberY = overlayY + overlayHeight + (10 * heightRatio); // position Y ajustée
+                                double plaqueNumberY = overlayY + overlayHeight + (9 * heightRatio); // position Y ajustée
                                 gfx.DrawString(plaqueNumber.ToString(), font, brush, plaqueNumberX, plaqueNumberY);
 
                                 plaqueNumber++;

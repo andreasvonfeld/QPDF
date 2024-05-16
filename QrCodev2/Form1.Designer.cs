@@ -277,7 +277,7 @@ namespace QrCodev2
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(186, 17);
             this.label7.TabIndex = 26;
-            this.label7.Text = "QPDF v1.0 - mediapush.fr ©";
+            this.label7.Text = "QPDF v1.1 - mediapush.fr ©";
             this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // btn_Modifier
