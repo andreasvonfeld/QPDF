@@ -158,5 +158,10 @@ namespace QrCodev2
         {
             FrmAjouter.ShowDialog();
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

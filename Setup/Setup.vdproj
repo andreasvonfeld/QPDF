@@ -507,12 +507,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9DB8E28B89C54ABC9D6271B6D2C20C6D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_9E2EB36A5CF1192342946714BD5075CE"
         "OwnerKey" = "8:_FED58B8B4DBA47EE8B92F70A5900EEC4"
         "MsmSig" = "8:_UNDEFINED"
@@ -629,6 +623,12 @@
         {
         "MsmKey" = "8:_B2E5E79E2244005BA56607C4F6AFD14E"
         "OwnerKey" = "8:_C6565894B1B37CB3C98C76277FEE0301"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B64ED113EED94DC9B8501415580DA2B3"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4015,26 +4015,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9DB8E28B89C54ABC9D6271B6D2C20C6D"
-            {
-            "SourcePath" = "8:..\\..\\..\\..\\Downloads\\logoappli.ico"
-            "TargetName" = "8:logoappli.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_FF8F16155F6D49FB98A46CFBE4D2C037"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9E2EB36A5CF1192342946714BD5075CE"
             {
             "AssemblyRegister" = "3:1"
@@ -4394,6 +4374,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B64ED113EED94DC9B8501415580DA2B3"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\Downloads\\logoapplimediapush.ico"
+            "TargetName" = "8:logoapplimediapush.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_FF8F16155F6D49FB98A46CFBE4D2C037"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B7715874F57A2AA4BC7D8388BEFD1BFC"
@@ -5722,9 +5722,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Setup"
+        "ProductName" = "8:QPDF"
         "ProductCode" = "8:{04416315-2F0C-4CA6-8F29-C05818AFE422}"
-        "PackageCode" = "8:{22D90BCD-5342-4B8C-9DA1-7474A7140BA6}"
+        "PackageCode" = "8:{52254584-E0E1-4859-BC35-D0168DF33EA3}"
         "UpgradeCode" = "8:{D22F7895-3DFD-4854-A159-72D998DD2928}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -5735,7 +5735,7 @@
         "Manufacturer" = "8:QPDF"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Setup"
+        "Title" = "8:QPDF"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Andréas Vonfeld"
         "Keywords" = "8:"
@@ -5844,23 +5844,9 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_3E39335D57A342C6BB71A98565A12E13"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_0C0F737E43B24D82BE9F1322D70BB7BA"
             {
-            "Name" = "8:Qpdf"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_FED58B8B4DBA47EE8B92F70A5900EEC4"
-            "Folder" = "8:_3D4F6DBDA89C423ABD348C8451375312"
-            "WorkingFolder" = "8:_FF8F16155F6D49FB98A46CFBE4D2C037"
-            "Icon" = "8:_9DB8E28B89C54ABC9D6271B6D2C20C6D"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_3FF9F51810D44863BCAA28CB53CEA9E7"
-            {
-            "Name" = "8:Qpdf"
+            "Name" = "8:qpdf"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -5869,7 +5855,21 @@
             "Target" = "8:_FED58B8B4DBA47EE8B92F70A5900EEC4"
             "Folder" = "8:_8E9F35087AFB47579F66B66AE52803EE"
             "WorkingFolder" = "8:_FF8F16155F6D49FB98A46CFBE4D2C037"
-            "Icon" = "8:_9DB8E28B89C54ABC9D6271B6D2C20C6D"
+            "Icon" = "8:_B64ED113EED94DC9B8501415580DA2B3"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D9D281C16CF242079EE1FE0A86E87E2C"
+            {
+            "Name" = "8:qpdf"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_FED58B8B4DBA47EE8B92F70A5900EEC4"
+            "Folder" = "8:_3D4F6DBDA89C423ABD348C8451375312"
+            "WorkingFolder" = "8:_FF8F16155F6D49FB98A46CFBE4D2C037"
+            "Icon" = "8:_B64ED113EED94DC9B8501415580DA2B3"
             "Feature" = "8:"
             }
         }

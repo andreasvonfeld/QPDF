@@ -36,6 +36,7 @@ namespace QrCodev2
             this.btn_ajouter = new System.Windows.Forms.Button();
             this.btn_modifier = new System.Windows.Forms.Button();
             this.btn_fermer = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.grp_produits.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_produits)).BeginInit();
             this.SuspendLayout();
@@ -104,11 +105,23 @@ namespace QrCodev2
             this.btn_fermer.UseVisualStyleBackColor = true;
             this.btn_fermer.Click += new System.EventHandler(this.btn_ok_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(15, 494);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(403, 15);
+            this.label1.TabIndex = 27;
+            this.label1.Text = "Les fichiers doivent être au format PDF et de bonnes dimensions (en cm)";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
+            // 
             // Produits
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 526);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.btn_fermer);
             this.Controls.Add(this.btn_modifier);
             this.Controls.Add(this.btn_ajouter);
@@ -121,6 +134,7 @@ namespace QrCodev2
             this.grp_produits.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_produits)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -132,5 +146,6 @@ namespace QrCodev2
         private System.Windows.Forms.Button btn_ajouter;
         private System.Windows.Forms.Button btn_modifier;
         private System.Windows.Forms.Button btn_fermer;
+        private System.Windows.Forms.Label label1;
     }
 }

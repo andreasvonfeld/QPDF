@@ -37,7 +37,8 @@ namespace QrCodev2
                 return;
             }
 
-            string directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Repertoire");
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string directory = Path.Combine(appDataPath, "QPDF", "Repertoire");
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
@@ -49,10 +50,8 @@ namespace QrCodev2
 
             try
             {
-                // Copie le fichier sélectionné dans le répertoire et le renomme
                 File.Copy(selectedFilePath, newFilePath, true);
 
-                // Mise à jour du DataGridView dans Produits
                 DataGridViewRow newRow = new DataGridViewRow();
                 newRow.CreateCells(produitsForm.dgv_produits);
                 newRow.Cells[0].Value = newFileName;
@@ -60,7 +59,7 @@ namespace QrCodev2
                 produitsForm.dgv_produits.Rows.Add(newRow);
 
                 MessageBox.Show("Le fichier a été ajouté et renommé avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close(); // Ferme le formulaire après ajout
+                this.Close();
             }
             catch (Exception ex)
             {
@@ -71,21 +70,20 @@ namespace QrCodev2
         private void btn_parcourir_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "All Files (*.*)|*.*";
+            openFileDialog.Filter = "PDF Files (*.pdf)|*.pdf";
             openFileDialog.Title = "Select a File";
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 selectedFilePath = openFileDialog.FileName;
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(selectedFilePath);
-                txt_nom.Text = fileNameWithoutExtension; // Met à jour le TextBox avec le nom du fichier sans l'extension
-                label1.Text = selectedFilePath; // Met à jour le label avec le chemin du fichier sélectionné
+                txt_nom.Text = fileNameWithoutExtension;
+                label1.Text = selectedFilePath;
             }
         }
 
         private void ajouter_produit_Load(object sender, EventArgs e)
         {
-
         }
     }
 }

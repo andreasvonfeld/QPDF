@@ -32,7 +32,6 @@ C:\Users\andre\Source\Repos\QrCodePDF\QrCodev2\obj\Release\QrCodev2.exe
 C:\Users\andre\Source\Repos\QrCodePDF\QrCodev2\obj\Release\QrCodev2.pdb
 C:\Users\andre\Source\Repos\QrCodePDF\QrCodev2\bin\Release\Newtonsoft.Json.dll
 C:\Users\andre\Source\Repos\QrCodePDF\QrCodev2\bin\Release\Newtonsoft.Json.xml
-C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.csproj.AssemblyReference.cache
 C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.Form1.resources
 C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.csproj.GenerateResource.cache
 C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.exe
@@ -77,3 +76,9 @@ C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.csproj.CopyCo
 C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.Produits.resources
 C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.modifier_produit.resources
 C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.ajouter_produit.resources
+C:\Users\andre\source\repos\QrCodeV5\QrCodev2\bin\Release\Repertoire\Facebook.pdf
+C:\Users\andre\source\repos\QrCodeV5\QrCodev2\bin\Release\Repertoire\Google.pdf
+C:\Users\andre\source\repos\QrCodeV5\QrCodev2\bin\Release\Repertoire\Instagram.pdf
+C:\Users\andre\source\repos\QrCodeV5\QrCodev2\bin\Release\Repertoire\TikTok.pdf
+C:\Users\andre\source\repos\QrCodeV5\QrCodev2\bin\Release\Repertoire\Web.pdf
+C:\Users\andre\source\repos\QrCodeV5\QrCodev2\obj\Release\QrCodev2.APIKey.resources

@@ -48,14 +48,15 @@ namespace QrCodev2
             this.label5 = new System.Windows.Forms.Label();
             this.btn_Generer = new System.Windows.Forms.Button();
             this.grp_infos = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
             this.btn_Modifier = new System.Windows.Forms.Button();
             this.nup_NbrExemplaire = new System.Windows.Forms.NumericUpDown();
             this.label13 = new System.Windows.Forms.Label();
-            this.btn_supprimer = new System.Windows.Forms.Button();
             this.dgv_recap = new System.Windows.Forms.DataGridView();
             this.btn_produits = new System.Windows.Forms.Button();
             this.picture_box = new System.Windows.Forms.PictureBox();
-            this.label7 = new System.Windows.Forms.Label();
+            this.btn_api = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.grp_infos.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nup_NbrExemplaire)).BeginInit();
@@ -234,18 +235,18 @@ namespace QrCodev2
             this.btn_Generer.Name = "btn_Generer";
             this.btn_Generer.Size = new System.Drawing.Size(135, 42);
             this.btn_Generer.TabIndex = 14;
-            this.btn_Generer.Text = "Générer et enregistrer sous...";
+            this.btn_Generer.Text = "Générer la planche sous...";
             this.btn_Generer.UseVisualStyleBackColor = true;
             this.btn_Generer.Click += new System.EventHandler(this.btn_Generer_Click);
             // 
             // grp_infos
             // 
+            this.grp_infos.Controls.Add(this.button1);
             this.grp_infos.Controls.Add(this.label7);
             this.grp_infos.Controls.Add(this.btn_Modifier);
             this.grp_infos.Controls.Add(this.nup_NbrExemplaire);
             this.grp_infos.Controls.Add(this.label13);
             this.grp_infos.Controls.Add(this.txt_numDepart);
-            this.grp_infos.Controls.Add(this.btn_supprimer);
             this.grp_infos.Controls.Add(this.dgv_recap);
             this.grp_infos.Controls.Add(this.btn_Generer);
             this.grp_infos.Controls.Add(this.label5);
@@ -257,6 +258,27 @@ namespace QrCodev2
             this.grp_infos.TabIndex = 1;
             this.grp_infos.TabStop = false;
             this.grp_infos.Text = "Récapitulatif";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(862, 337);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(135, 42);
+            this.button1.TabIndex = 27;
+            this.button1.Text = "Générer les QR codes sous...";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.btn_enregistrerQRcode_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(952, 417);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(186, 17);
+            this.label7.TabIndex = 26;
+            this.label7.Text = "QPDF v1.0 - mediapush.fr ©";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // btn_Modifier
             // 
@@ -287,17 +309,6 @@ namespace QrCodev2
             this.label13.Size = new System.Drawing.Size(139, 15);
             this.label13.TabIndex = 21;
             this.label13.Text = "Nombre d\'exemplaires :";
-            // 
-            // btn_supprimer
-            // 
-            this.btn_supprimer.Location = new System.Drawing.Point(897, 337);
-            this.btn_supprimer.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btn_supprimer.Name = "btn_supprimer";
-            this.btn_supprimer.Size = new System.Drawing.Size(100, 33);
-            this.btn_supprimer.TabIndex = 22;
-            this.btn_supprimer.Text = "Supprimer";
-            this.btn_supprimer.UseVisualStyleBackColor = true;
-            this.btn_supprimer.Click += new System.EventHandler(this.btn_supprimer_Click);
             // 
             // dgv_recap
             // 
@@ -334,21 +345,23 @@ namespace QrCodev2
             this.picture_box.TabIndex = 25;
             this.picture_box.TabStop = false;
             // 
-            // label7
+            // btn_api
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(952, 417);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(186, 17);
-            this.label7.TabIndex = 26;
-            this.label7.Text = "QPDF v1.0 - mediapush.fr ©";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.btn_api.Location = new System.Drawing.Point(944, 13);
+            this.btn_api.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_api.Name = "btn_api";
+            this.btn_api.Size = new System.Drawing.Size(100, 33);
+            this.btn_api.TabIndex = 27;
+            this.btn_api.Text = "Clé API";
+            this.btn_api.UseVisualStyleBackColor = true;
+            this.btn_api.Click += new System.EventHandler(this.btn_api_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1165, 631);
+            this.Controls.Add(this.btn_api);
             this.Controls.Add(this.btn_produits);
             this.Controls.Add(this.picture_box);
             this.Controls.Add(this.grp_infos);
@@ -390,13 +403,14 @@ namespace QrCodev2
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.GroupBox grp_infos;
         internal System.Windows.Forms.DataGridView dgv_recap;
-        private System.Windows.Forms.Button btn_supprimer;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown nup_NbrExemplaire;
         private System.Windows.Forms.Button btn_Modifier;
         private System.Windows.Forms.PictureBox picture_box;
         private System.Windows.Forms.Button btn_produits;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button btn_api;
+        private System.Windows.Forms.Button button1;
     }
 }
 
