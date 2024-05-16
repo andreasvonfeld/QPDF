@@ -90,6 +90,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ajouter_produit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ajouter_produit.Designer.cs">
+      <DependentUpon>ajouter_produit.cs</DependentUpon>
+    </Compile>
     <Compile Include="API.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -97,20 +103,43 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="modifier_produit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="modifier_produit.Designer.cs">
+      <DependentUpon>modifier_produit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Produits.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Produits.Designer.cs">
+      <DependentUpon>Produits.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ajouter_produit.resx">
+      <DependentUpon>ajouter_produit.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="modifier_produit.resx">
+      <DependentUpon>modifier_produit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Produits.resx">
+      <DependentUpon>Produits.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -126,8 +155,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\c2644f94cfda9ba79a25b8e737bc5748.png" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

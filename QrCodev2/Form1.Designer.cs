@@ -46,26 +46,20 @@ namespace QrCodev2
             this.label1 = new System.Windows.Forms.Label();
             this.txt_numDepart = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.lbl_chemin = new System.Windows.Forms.Label();
             this.btn_Generer = new System.Windows.Forms.Button();
             this.grp_infos = new System.Windows.Forms.GroupBox();
-            this.btn_Modifier2 = new System.Windows.Forms.Button();
             this.btn_Modifier = new System.Windows.Forms.Button();
             this.nup_NbrExemplaire = new System.Windows.Forms.NumericUpDown();
             this.label13 = new System.Windows.Forms.Label();
             this.btn_supprimer = new System.Windows.Forms.Button();
             this.dgv_recap = new System.Windows.Forms.DataGridView();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.dgv_emplacement = new System.Windows.Forms.DataGridView();
-            this.lbl_parcourir = new System.Windows.Forms.Button();
-            this.btn_Deplacer = new System.Windows.Forms.Button();
+            this.btn_produits = new System.Windows.Forms.Button();
             this.picture_box = new System.Windows.Forms.PictureBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.grp_infos.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nup_NbrExemplaire)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_recap)).BeginInit();
-            this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_emplacement)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picture_box)).BeginInit();
             this.SuspendLayout();
             // 
@@ -233,20 +227,9 @@ namespace QrCodev2
             this.label5.TabIndex = 5;
             this.label5.Text = "Numéro de départ :";
             // 
-            // lbl_chemin
-            // 
-            this.lbl_chemin.AutoSize = true;
-            this.lbl_chemin.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_chemin.Location = new System.Drawing.Point(6, 374);
-            this.lbl_chemin.Name = "lbl_chemin";
-            this.lbl_chemin.Size = new System.Drawing.Size(68, 15);
-            this.lbl_chemin.TabIndex = 20;
-            this.lbl_chemin.Text = "lbl_chemin";
-            this.lbl_chemin.Click += new System.EventHandler(this.lbl_chemin_Click);
-            // 
             // btn_Generer
             // 
-            this.btn_Generer.Location = new System.Drawing.Point(546, 337);
+            this.btn_Generer.Location = new System.Drawing.Point(1003, 337);
             this.btn_Generer.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Generer.Name = "btn_Generer";
             this.btn_Generer.Size = new System.Drawing.Size(135, 42);
@@ -257,7 +240,7 @@ namespace QrCodev2
             // 
             // grp_infos
             // 
-            this.grp_infos.Controls.Add(this.btn_Modifier2);
+            this.grp_infos.Controls.Add(this.label7);
             this.grp_infos.Controls.Add(this.btn_Modifier);
             this.grp_infos.Controls.Add(this.nup_NbrExemplaire);
             this.grp_infos.Controls.Add(this.label13);
@@ -266,29 +249,18 @@ namespace QrCodev2
             this.grp_infos.Controls.Add(this.dgv_recap);
             this.grp_infos.Controls.Add(this.btn_Generer);
             this.grp_infos.Controls.Add(this.label5);
-            this.grp_infos.Location = new System.Drawing.Point(469, 186);
+            this.grp_infos.Location = new System.Drawing.Point(12, 186);
             this.grp_infos.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.grp_infos.Name = "grp_infos";
             this.grp_infos.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.grp_infos.Size = new System.Drawing.Size(687, 438);
+            this.grp_infos.Size = new System.Drawing.Size(1144, 438);
             this.grp_infos.TabIndex = 1;
             this.grp_infos.TabStop = false;
             this.grp_infos.Text = "Récapitulatif";
             // 
-            // btn_Modifier2
-            // 
-            this.btn_Modifier2.Location = new System.Drawing.Point(237, 385);
-            this.btn_Modifier2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btn_Modifier2.Name = "btn_Modifier2";
-            this.btn_Modifier2.Size = new System.Drawing.Size(100, 33);
-            this.btn_Modifier2.TabIndex = 26;
-            this.btn_Modifier2.Text = "Modifier";
-            this.btn_Modifier2.UseVisualStyleBackColor = true;
-            this.btn_Modifier2.Click += new System.EventHandler(this.btn_Modifier2_Click);
-            // 
             // btn_Modifier
             // 
-            this.btn_Modifier.Location = new System.Drawing.Point(237, 340);
+            this.btn_Modifier.Location = new System.Drawing.Point(248, 385);
             this.btn_Modifier.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Modifier.Name = "btn_Modifier";
             this.btn_Modifier.Size = new System.Drawing.Size(100, 33);
@@ -318,7 +290,7 @@ namespace QrCodev2
             // 
             // btn_supprimer
             // 
-            this.btn_supprimer.Location = new System.Drawing.Point(440, 337);
+            this.btn_supprimer.Location = new System.Drawing.Point(897, 337);
             this.btn_supprimer.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_supprimer.Name = "btn_supprimer";
             this.btn_supprimer.Size = new System.Drawing.Size(100, 33);
@@ -335,59 +307,22 @@ namespace QrCodev2
             this.dgv_recap.Name = "dgv_recap";
             this.dgv_recap.RowHeadersWidth = 51;
             this.dgv_recap.RowTemplate.Height = 24;
-            this.dgv_recap.Size = new System.Drawing.Size(674, 311);
+            this.dgv_recap.Size = new System.Drawing.Size(1131, 311);
             this.dgv_recap.TabIndex = 0;
             this.dgv_recap.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_recap_CellContentClick);
             this.dgv_recap.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_recap_CellValueChanged);
             this.dgv_recap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dgv_recap_MouseClick);
             // 
-            // groupBox2
+            // btn_produits
             // 
-            this.groupBox2.Controls.Add(this.dgv_emplacement);
-            this.groupBox2.Controls.Add(this.lbl_parcourir);
-            this.groupBox2.Controls.Add(this.lbl_chemin);
-            this.groupBox2.Location = new System.Drawing.Point(12, 186);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox2.Size = new System.Drawing.Size(414, 438);
-            this.groupBox2.TabIndex = 23;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Emplacement des fichiers";
-            // 
-            // dgv_emplacement
-            // 
-            this.dgv_emplacement.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_emplacement.Location = new System.Drawing.Point(7, 21);
-            this.dgv_emplacement.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.dgv_emplacement.Name = "dgv_emplacement";
-            this.dgv_emplacement.RowHeadersWidth = 51;
-            this.dgv_emplacement.RowTemplate.Height = 24;
-            this.dgv_emplacement.Size = new System.Drawing.Size(398, 311);
-            this.dgv_emplacement.TabIndex = 0;
-            this.dgv_emplacement.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            // 
-            // lbl_parcourir
-            // 
-            this.lbl_parcourir.Location = new System.Drawing.Point(7, 337);
-            this.lbl_parcourir.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.lbl_parcourir.Name = "lbl_parcourir";
-            this.lbl_parcourir.Size = new System.Drawing.Size(100, 33);
-            this.lbl_parcourir.TabIndex = 17;
-            this.lbl_parcourir.Text = "Parcourir";
-            this.lbl_parcourir.UseVisualStyleBackColor = true;
-            this.lbl_parcourir.Click += new System.EventHandler(this.btn_Parcourir_Click);
-            // 
-            // btn_Deplacer
-            // 
-            this.btn_Deplacer.Location = new System.Drawing.Point(433, 295);
-            this.btn_Deplacer.Margin = new System.Windows.Forms.Padding(4);
-            this.btn_Deplacer.Name = "btn_Deplacer";
-            this.btn_Deplacer.Size = new System.Drawing.Size(29, 28);
-            this.btn_Deplacer.TabIndex = 24;
-            this.btn_Deplacer.Text = ">";
-            this.btn_Deplacer.UseVisualStyleBackColor = true;
-            this.btn_Deplacer.Click += new System.EventHandler(this.btn_Deplacer_Click);
+            this.btn_produits.Location = new System.Drawing.Point(1050, 13);
+            this.btn_produits.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_produits.Name = "btn_produits";
+            this.btn_produits.Size = new System.Drawing.Size(100, 33);
+            this.btn_produits.TabIndex = 26;
+            this.btn_produits.Text = "Produits";
+            this.btn_produits.UseVisualStyleBackColor = true;
+            this.btn_produits.Click += new System.EventHandler(this.btn_produits_Click);
             // 
             // picture_box
             // 
@@ -399,14 +334,23 @@ namespace QrCodev2
             this.picture_box.TabIndex = 25;
             this.picture_box.TabStop = false;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(952, 417);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(186, 17);
+            this.label7.TabIndex = 26;
+            this.label7.Text = "QPDF v1.0 - mediapush.fr ©";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1165, 631);
+            this.Controls.Add(this.btn_produits);
             this.Controls.Add(this.picture_box);
-            this.Controls.Add(this.btn_Deplacer);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.grp_infos);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -420,9 +364,6 @@ namespace QrCodev2
             this.grp_infos.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nup_NbrExemplaire)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_recap)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_emplacement)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picture_box)).EndInit();
             this.ResumeLayout(false);
 
@@ -447,19 +388,15 @@ namespace QrCodev2
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label lbl_chemin;
         private System.Windows.Forms.GroupBox grp_infos;
-        private System.Windows.Forms.DataGridView dgv_recap;
+        internal System.Windows.Forms.DataGridView dgv_recap;
         private System.Windows.Forms.Button btn_supprimer;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.DataGridView dgv_emplacement;
-        private System.Windows.Forms.Button lbl_parcourir;
-        private System.Windows.Forms.Button btn_Deplacer;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown nup_NbrExemplaire;
         private System.Windows.Forms.Button btn_Modifier;
-        private System.Windows.Forms.Button btn_Modifier2;
         private System.Windows.Forms.PictureBox picture_box;
+        private System.Windows.Forms.Button btn_produits;
+        private System.Windows.Forms.Label label7;
     }
 }
 

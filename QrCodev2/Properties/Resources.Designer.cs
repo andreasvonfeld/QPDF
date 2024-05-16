@@ -69,5 +69,25 @@ namespace QrCodev2.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap c2644f94cfda9ba79a25b8e737bc57481 {
+            get {
+                object obj = ResourceManager.GetObject("c2644f94cfda9ba79a25b8e737bc57481", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap mediapush {
+            get {
+                object obj = ResourceManager.GetObject("mediapush", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
