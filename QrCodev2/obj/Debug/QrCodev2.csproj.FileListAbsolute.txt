@@ -216,7 +216,6 @@ C:\Users\andre\source\repos\QrCode\QrCodev2\bin\Debug\zxing.xml
 C:\Users\andre\source\repos\QrCode\QrCodev2\bin\Debug\zxing.presentation.xml
 C:\Users\andre\source\repos\QrCode\QrCodev2\bin\Debug\nl\PdfiumViewer.resources.dll
 C:\Users\andre\source\repos\QrCode\QrCodev2\bin\Debug\de\PdfSharpCore.resources.dll
-C:\Users\andre\source\repos\QrCode\QrCodev2\obj\Debug\QrCodev2.csproj.AssemblyReference.cache
 C:\Users\andre\source\repos\QrCode\QrCodev2\obj\Debug\QrCodev2.ajouter_produit.resources
 C:\Users\andre\source\repos\QrCode\QrCodev2\obj\Debug\QrCodev2.APIKey.resources
 C:\Users\andre\source\repos\QrCode\QrCodev2\obj\Debug\QrCodev2.Form1.resources
