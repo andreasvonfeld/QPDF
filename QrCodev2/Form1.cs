@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using Svg;
-using ZXing;
-using ZXing.Common;
+using System.Text.RegularExpressions;
+
 
 namespace QrCodev2
 {
@@ -26,6 +23,8 @@ namespace QrCodev2
         /// </summary>
         private readonly HttpClient _client;
         private Produits produitsForm;
+        private Color selectedColor;
+
         /// <summary>
         /// Initialisation de la fenêtre de départ
         /// </summary>
@@ -36,6 +35,7 @@ namespace QrCodev2
             string apiKey = "key";
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
             produitsForm = new Produits(this);
+            CheckApiKeyAndToggleButtons();
         }
 
         private void label1_Click(object sender, EventArgs e) { }
@@ -77,6 +77,11 @@ namespace QrCodev2
                 int currentCol = 0;
                 int plaqueNumber = int.Parse(txt_numDepart.Text);
 
+                progressBar1.Visible = true;
+                progressBar1.Minimum = 0;
+                progressBar1.Value = 5;
+                progressBar1.Maximum = 100;
+
                 foreach (DataGridViewRow dgvRow in dgv_recap.Rows)
                 {
                     if (dgvRow.Cells["colonneNombre"].Value != null && int.TryParse(dgvRow.Cells["colonneNombre"].Value.ToString(), out int nombreExemplaires) && nombreExemplaires > 0)
@@ -86,7 +91,7 @@ namespace QrCodev2
                         {
                             string color = dgvRow.Cells["colonneCouleur"].Value?.ToString() ?? "noir";
                             string style = dgvRow.Cells["colonneStyle"].Value?.ToString() ?? "square";
-                            XBrush brush = color == "blanc" ? XBrushes.White : XBrushes.Black;
+                            XBrush brush = color == "blanc" ? XBrushes.White : XBrushes.Black;                   
 
                             for (int i = 0; i < nombreExemplaires; i++)
                             {
@@ -100,7 +105,8 @@ namespace QrCodev2
                                 string customUrl = $"https://www.qrcode.mediapush.fr/{currentNumero}";
 
                                 int linkId = await CreateLinkAsync(currentNumero);
-                                int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero, "#000000", style);
+                                int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero);
+
 
                                 // Ajout du QR code avec redimensionnement
                                 XImage overlayImage = await GetQrCodeImageAsync(qrCodeId);
@@ -119,6 +125,8 @@ namespace QrCodev2
 
                                 plaqueNumber++;
 
+                                progressBar1.Value++;  // Incrémenter la barre de progression après chaque ligne traitée
+
                                 currentCol++;
                                 if (currentCol >= plaquesPerLine)
                                 {
@@ -129,6 +137,8 @@ namespace QrCodev2
                         }
                     }
                 }
+
+                progressBar1.Value = progressBar1.Maximum;
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "PDF Files (*.pdf)|*.pdf|All Files (*.*)|*.*";
@@ -142,16 +152,15 @@ namespace QrCodev2
             {
                 MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            progressBar1.Visible = false;
         }
 
-
-
-            /// <summary>
-            /// Méthode permettant de convertir le SVG en PDF
-            /// </summary>
-            /// <param name="svgContent"></param>
-            /// <param name="pdfOutputPath"></param>
-            public static void ConvertSvgToPdf(string svgContent, string pdfOutputPath)
+        /// <summary>
+        /// Méthode permettant de convertir le SVG en PDF
+        /// </summary>
+        /// <param name="svgContent"></param>
+        /// <param name="pdfOutputPath"></param>
+        public static void ConvertSvgToPdf(string svgContent, string pdfOutputPath)
         {
             var svgDocument = SvgDocument.FromSvg<SvgDocument>(svgContent);
 
@@ -179,44 +188,50 @@ namespace QrCodev2
         }
 
         /// <summary>
-        /// Méthode permettant de créer un QR Code en prenant en compte son nom, son type et le numéro
+        /// Méthode permettant de créer un QR Code en prenant en compte son nom, son typeA et le numéro
         /// </summary>
         /// <param name="name"></param>
         /// <param name="type"></param>
         /// <param name="numeroDepart"></param>
         /// <returns></returns>
-        public async Task<int> CreateQrCodeAsync(string name, string type, int numeroDepart, string foregroundColor = "#000000", string style = "square")
+        public async Task<int> CreateQrCodeAsync(string name, string type, int numeroDepart)
         {
-            string url = $"https://www.qrcode.mediapush.fr/{numeroDepart}";
             var content = new MultipartFormDataContent {
         { new StringContent(name), "name" },
         { new StringContent(type), "type" },
-        { new StringContent(url), "url" },
-        { new StringContent(foregroundColor), "foreground_color" },
-        { new StringContent(style), "style" }
+        { new StringContent($"https://www.qrcode.mediapush.fr/{numeroDepart}"), "url" }
     };
 
-            var apiUrl = "https://www.qrcode.mediapush.fr/api/qr-codes";
+            HttpResponseMessage response = await _client.PostAsync("https://www.qrcode.mediapush.fr/api/qr-codes", content);
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+            dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
+            return responseObject.data.id;
+        }
 
-            try
+        /// <summary>
+        /// Permet de convertir le SVG en PNG
+        /// </summary>
+        /// <param name="svgContent"></param>
+        /// <param name="selectedColor"></param>
+        /// <returns></returns>
+        public async Task<Bitmap> ConvertSvgToPngWithColorAsync(string svgContent, Color selectedColor)
+        {
+            // Replace the default black fill color with the selected color in the SVG content
+            string colorHex = ColorTranslator.ToHtml(selectedColor);
+            string modifiedSvgContent = svgContent.Replace("fill=\"#000000\"", $"fill=\"{colorHex}\"");
+
+            var svgDocument = SvgDocument.FromSvg<SvgDocument>(modifiedSvgContent);
+            using (var bitmap = svgDocument.Draw())
             {
-                Console.WriteLine($"Sending color to API: {foregroundColor}, style: {style}");
-                HttpResponseMessage response = await _client.PostAsync(apiUrl, content);
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"API Response: {responseBody}");
-                dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
-                return responseObject.data.id;
-            }
-            catch (HttpRequestException ex)
-            {
-                Console.WriteLine($"API error: {ex.Message}");
-                throw;
+                MemoryStream stream = new MemoryStream();
+                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                stream.Position = 0;
+                return new Bitmap(stream);
             }
         }
 
-
-            public async Task<int> CreateLinkAsync(int currentNumero)
+        public async Task<int> CreateLinkAsync(int currentNumero)
         {
             var content = new MultipartFormDataContent
             {
@@ -257,6 +272,7 @@ namespace QrCodev2
             dgv_recap.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgv_recap.AllowUserToOrderColumns = false;
             nup_NbrExemplaire.Value = 1;
+            progressBar1.Visible = false;
 
             dgv_recap.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Nom du fond", Name = "colonneFond" });
             dgv_recap.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Chemin du fond", Name = "colonneChemin" });
@@ -281,6 +297,7 @@ namespace QrCodev2
 
             string apiKey = GetCurrentApiKey();
             lbl_api.Visible = string.IsNullOrEmpty(apiKey) || apiKey == "key";
+            lbl_API2.Visible = string.IsNullOrEmpty(apiKey) || apiKey == "key";
         }
 
         /// <summary>
@@ -310,7 +327,7 @@ namespace QrCodev2
                 row.CreateCells(dataGridView);
                 row.Cells[0].Value = nomFichier;
                 row.Cells[1].Value = fichier;
-                row.Cells[2].Value = 1;
+                row.Cells[2].Value = 0;
                 row.Cells[3].Value = "";
                 row.Cells[4].Value = "";
 
@@ -572,16 +589,7 @@ namespace QrCodev2
             try
             {
                 HttpResponseMessage response = await _client.GetAsync(apiUrl);
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new Exception("Erreur : Merci de vérifier votre clé d'API ou qu'un QR code ne possède pas le même numéro");
-                }
-                if (!response.IsSuccessStatusCode)
-                {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Failed to fetch QR code: {response.StatusCode} - {responseContent}");
-                    throw new Exception($"API call failed with status code {response.StatusCode}");
-                }
+                response.EnsureSuccessStatusCode();
 
                 string responseBody = await response.Content.ReadAsStringAsync();
                 JObject jsonResponse = JObject.Parse(responseBody);
@@ -593,26 +601,31 @@ namespace QrCodev2
 
                 string qrCodeUrl = jsonResponse["data"]["qr_code"].ToString();
                 HttpResponseMessage svgResponse = await _client.GetAsync(qrCodeUrl);
-                if (svgResponse.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new Exception("Erreur : Merci de vérifier votre clé d'API ou qu'un QR code ne possède pas le même numéro");
-                }
-                if (!svgResponse.IsSuccessStatusCode)
-                {
-                    throw new Exception("Failed to download QR code SVG.");
-                }
+                svgResponse.EnsureSuccessStatusCode();
 
                 string svgContent = await svgResponse.Content.ReadAsStringAsync();
+                Console.WriteLine("SVG Content Received: " + svgContent); 
+
+                svgContent = RemoveWhiteBackgroundFromSvg(svgContent);
+
                 return await ConvertSvgToXImageAsync(svgContent);
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new Exception($"Network error: {ex.Message}");
             }
             catch (Exception ex)
             {
                 throw new Exception($"Error processing QR code SVG: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Enlève le fond blanc
+        /// </summary>
+        /// <param name="svgContent"></param>
+        /// <returns></returns>
+        public static string RemoveWhiteBackgroundFromSvg(string svgContent)
+        {
+            return svgContent.Replace("fill=\"#ffffff\"", "fill=\"none\"")
+                             .Replace("fill=\"#FFFFFF\"", "fill=\"none\"")
+                             .Replace("fill=\"white\"", "fill=\"none\"");
         }
 
         /// <summary>
@@ -653,63 +666,80 @@ namespace QrCodev2
                     string newApiKey = apiKeyForm.ApiKey;
                     UpdateApiKey(newApiKey);
 
-                    // Check API key and set lbl_api visibility
                     lbl_api.Visible = string.IsNullOrEmpty(newApiKey) || newApiKey == "key";
+                    lbl_API2.Visible = string.IsNullOrEmpty(newApiKey) || newApiKey == "key";
                 }
             }
         }
 
+        /// <summary>
+        /// Permet de récupérer la clé API
+        /// </summary>
+        /// <returns></returns>
         private string GetCurrentApiKey()
         {
-            // Obtenez la clé API actuelle, cette méthode devrait être implémentée pour récupérer la clé actuelle si nécessaire
             return _client.DefaultRequestHeaders.Authorization?.Parameter;
         }
 
+        /// <summary>
+        /// méthode permettant de mettre à jour la clé API
+        /// </summary>
+        /// <param name="newApiKey"></param>
         private void UpdateApiKey(string newApiKey)
         {
             // Met à jour l'API Key dans le HttpClient
             _client.DefaultRequestHeaders.Remove("Authorization");
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {newApiKey}");
+            CheckApiKeyAndToggleButtons();
 
-            // Vous pouvez également enregistrer la nouvelle clé API dans un fichier de configuration ou autre stockage persistant si nécessaire
         }
 
+        /// <summary>
+        /// bouton qui permet d'enregistrer en SVG
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void btn_enregistrerQRcode_Click(object sender, EventArgs e)
         {
-            // Open a dialog to select a folder
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                folderBrowserDialog.Description = "Select a folder to save the QR code SVG files";
-
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                selectedColor = colorDialog.Color;
+                string selectedColorHex = ColorTranslator.ToHtml(selectedColor);
+                // Assurez-vous que le code hexadécimal commence par '#'
+                if (!selectedColorHex.StartsWith("#"))
                 {
-                    string selectedFolder = folderBrowserDialog.SelectedPath;
+                    selectedColorHex = "#" + selectedColorHex;
+                }
 
-                    foreach (DataGridViewRow dgvRow in dgv_recap.Rows)
+                using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+                {
+                    folderBrowserDialog.Description = "Select a folder to save the QR code SVG files";
+                    if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                     {
-                        if (dgvRow.Cells["colonneNombre"].Value != null && int.TryParse(dgvRow.Cells["colonneNombre"].Value.ToString(), out int nombreExemplaires) && nombreExemplaires > 0)
+                        string selectedFolder = folderBrowserDialog.SelectedPath;
+
+                        foreach (DataGridViewRow dgvRow in dgv_recap.Rows)
                         {
-                            if (dgvRow.Cells["colonneNumDep"].Value != null && int.TryParse(dgvRow.Cells["colonneNumDep"].Value.ToString(), out int numeroDepart))
+                            if (dgvRow.Cells["colonneNombre"].Value != null && int.TryParse(dgvRow.Cells["colonneNombre"].Value.ToString(), out int nombreExemplaires) && nombreExemplaires > 0)
                             {
-                                string style = dgvRow.Cells["colonneStyle"].Value?.ToString() ?? "square";
-
-                                for (int i = 0; i < nombreExemplaires; i++)
+                                if (dgvRow.Cells["colonneNumDep"].Value != null && int.TryParse(dgvRow.Cells["colonneNumDep"].Value.ToString(), out int numeroDepart))
                                 {
-                                    int currentNumero = numeroDepart + i;
+                                    for (int i = 0; i < nombreExemplaires; i++)
+                                    {
+                                        int currentNumero = numeroDepart + i;
+                                        int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero);
 
-                                    // Create the link and the QR code
-                                    int linkId = await CreateLinkAsync(currentNumero);
-                                    int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero, "#000000", style);
 
-                                    // Generate the SVG file for the QR code
-                                    string filePath = Path.Combine(selectedFolder, $"{currentNumero}.svg");
-                                    await SaveQrCodeToSvgAsync(qrCodeId, filePath);
+                                        // Générer le fichier SVG pour le QR code
+                                        string filePath = Path.Combine(selectedFolder, $"{currentNumero}.svg");
+                                        await SaveQrCodeToSvgAsync(qrCodeId, filePath);
+                                    }
                                 }
                             }
                         }
+                        MessageBox.Show("The QR code SVG files have been successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-
-                    MessageBox.Show("The QR code SVG files have been successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -752,6 +782,32 @@ namespace QrCodev2
                 throw new Exception($"Error processing QR code SVG: {ex.Message}");
             }
         }
+        public async Task<Bitmap> GenerateQrCodeAsync(int qrCodeId, Color foregroundColor)
+        {
+            // Fetch the SVG content from the API
+            string svgContent = await GetQrCodeSvgContentAsync(qrCodeId);
+
+            // Replace default black color with the selected foreground color in SVG content
+            string colorHex = ColorTranslator.ToHtml(foregroundColor);
+            svgContent = Regex.Replace(svgContent, "fill=\"#000000\"", $"fill=\"{colorHex}\"");
+
+            // Remove the background fill (remove any rect elements with white fill)
+            svgContent = Regex.Replace(svgContent, "<rect[^>]*fill=\"#ffffff\"[^>]*/>", string.Empty, RegexOptions.IgnoreCase);
+            svgContent = Regex.Replace(svgContent, "<rect[^>]*fill=\"white\"[^>]*/>", string.Empty, RegexOptions.IgnoreCase);
+
+            // Load the modified SVG content into an SVG document
+            var svgDocument = SvgDocument.FromSvg<SvgDocument>(svgContent);
+
+            // Render the SVG to a bitmap with a transparent background
+            var bitmap = new Bitmap((int)svgDocument.Width.Value, (int)svgDocument.Height.Value);
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.Clear(Color.Transparent);
+                svgDocument.Draw(graphics);
+            }
+
+            return bitmap;
+        }
 
         private async void btn_PNG_Click(object sender, EventArgs e)
         {
@@ -781,10 +837,17 @@ namespace QrCodev2
                                     for (int i = 0; i < nombreExemplaires; i++)
                                     {
                                         int currentNumero = numeroDepart + i;
-                                        string qrCodeText = $"https://www.qrcode.mediapush.fr/{currentNumero}";
+                                        string qrCodeText = currentNumero.ToString(); // Only the number as text for QR code
+
+                                        // Create the link
+                                        int linkId = await CreateLinkAsync(currentNumero);
+
+                                        // Create the QR code associated with the link
+                                        int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero);
+
 
                                         // Generate the QR code in PNG with the selected color and style
-                                        Bitmap qrCodeBitmap = await GenerateQrCodeAsync(qrCodeText, selectedColor, Color.White, style);
+                                        Bitmap qrCodeBitmap = await GenerateQrCodeAsync(qrCodeId, selectedColor);
                                         string filePath = Path.Combine(selectedFolder, $"{currentNumero}.png");
                                         qrCodeBitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
                                     }
@@ -792,73 +855,12 @@ namespace QrCodev2
                             }
                         }
 
-                        MessageBox.Show("The QR code PNG files have been successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("The QR code PNG files have been successfully saved.", "SuFGEccess", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
         }
-        public async Task SaveQrCodeToPngAsync(int qrCodeId, string filePath)
-        {
-            string apiUrl = $"https://www.qrcode.mediapush.fr/api/qr-codes/{qrCodeId}";
 
-            try
-            {
-                HttpResponseMessage response = await _client.GetAsync(apiUrl);
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new Exception("Erreur : Merci de vérifier votre clé d'API ou qu'un QR code ne possède pas le même numéro");
-                }
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"API call failed with status code {response.StatusCode}");
-                }
-
-                string responseBody = await response.Content.ReadAsStringAsync();
-                JObject jsonResponse = JObject.Parse(responseBody);
-
-                if (jsonResponse["data"] == null || jsonResponse["data"]["qr_code"] == null)
-                {
-                    throw new Exception("QR code SVG URL not found in API response.");
-                }
-
-                string qrCodeSvgUrl = jsonResponse["data"]["qr_code"].ToString();
-                string svgContent = await _client.GetStringAsync(qrCodeSvgUrl);
-                Console.WriteLine($"SVG Content: {svgContent}");
-
-                var svgDocument = SvgDocument.FromSvg<SvgDocument>(svgContent);
-                using (var bitmap = svgDocument.Draw())
-                {
-                    bitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new Exception($"Network error: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error processing QR code SVG: {ex.Message}");
-            }
-        }
-
-        public async Task<Bitmap> GenerateQrCodeAsync(string text, Color foregroundColor, Color backgroundColor, string style)
-        {
-            int qrCodeId = await CreateQrCodeAsync(text, "url", text.GetHashCode(), ColorTranslator.ToHtml(foregroundColor), style);
-            string svgContent = await GetQrCodeSvgContentAsync(qrCodeId);
-
-            // Update the SVG content to reflect the foreground color
-            svgContent = svgContent.Replace("#000000", ColorTranslator.ToHtml(foregroundColor)); // Assuming default color is black
-
-            var svgDocument = SvgDocument.FromSvg<SvgDocument>(svgContent);
-            using (var bitmap = svgDocument.Draw())
-            {
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    return new Bitmap(stream);
-                }
-            }
-        }
         public async Task<string> GetQrCodeSvgContentAsync(int qrCodeId)
         {
             string apiUrl = $"https://www.qrcode.mediapush.fr/api/qr-codes/{qrCodeId}";
@@ -895,8 +897,18 @@ namespace QrCodev2
                 throw new Exception($"Error processing QR code SVG: {ex.Message}");
             }
         }
+        private void CheckApiKeyAndToggleButtons()
+        {
+            string currentApiKey = GetCurrentApiKey();
+            bool shouldEnableButtons = !string.IsNullOrEmpty(currentApiKey) && currentApiKey != "key";
 
+            btn_Generer.Enabled = shouldEnableButtons;
+            btn_SVG.Enabled = shouldEnableButtons;
+            btn_PNG.Enabled = shouldEnableButtons;
+        }
     }
+
+
 
 
 

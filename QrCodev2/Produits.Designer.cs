@@ -111,7 +111,7 @@ namespace QrCodev2
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(15, 494);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(403, 15);
+            this.label1.Size = new System.Drawing.Size(348, 13);
             this.label1.TabIndex = 27;
             this.label1.Text = "Les fichiers doivent être au format PDF et de bonnes dimensions (en cm)";
             this.label1.Click += new System.EventHandler(this.label1_Click);
@@ -129,6 +129,7 @@ namespace QrCodev2
             this.Controls.Add(this.grp_produits);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Produits";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Les produits";
             this.Load += new System.EventHandler(this.Produits_Load);
             this.grp_produits.ResumeLayout(false);

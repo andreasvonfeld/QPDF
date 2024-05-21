@@ -69,8 +69,11 @@ namespace QrCodev2
             this.Controls.Add(this.btn_Save);
             this.Controls.Add(this.txtApiKey);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "APIKey";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Modifier la clé API";
             this.Load += new System.EventHandler(this.APIKey_Load);
             this.ResumeLayout(false);
