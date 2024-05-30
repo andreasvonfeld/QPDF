@@ -196,17 +196,43 @@ namespace QrCodev2
         /// <returns></returns>
         public async Task<int> CreateQrCodeAsync(string name, string type, int numeroDepart)
         {
-            var content = new MultipartFormDataContent {
-        { new StringContent(name), "name" },
-        { new StringContent(type), "type" },
-        { new StringContent($"https://www.qrcode.mediapush.fr/{numeroDepart}"), "url" }
-    };
+            int maxRetries = 5; // Maximum number of retries
+            int retryDelay = 4000; // Initial delay in milliseconds
+            int retryCount = 0;
 
-            HttpResponseMessage response = await _client.PostAsync("https://www.qrcode.mediapush.fr/api/qr-codes", content);
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
-            return responseObject.data.id;
+            while (retryCount < maxRetries)
+            {
+                // Créer un nouveau MultipartFormDataContent pour chaque requête
+                var content = new MultipartFormDataContent {
+            { new StringContent(name), "name" },
+            { new StringContent(type), "type" },
+            { new StringContent($"https://www.qrcode.mediapush.fr/{numeroDepart}"), "url" }
+        };
+
+                HttpResponseMessage response = await _client.PostAsync("https://www.qrcode.mediapush.fr/api/qr-codes", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
+                    return responseObject.data.id;
+                }
+                else if (response.StatusCode == (HttpStatusCode)429)
+                {
+                    // Wait for the delay period before retrying
+                    await Task.Delay(retryDelay);
+                    // Increase the delay for the next retry
+                    retryDelay *= 2;
+                    retryCount++;
+                }
+                else
+                {
+                    // If the error is not related to rate limiting, rethrow the exception
+                    throw new Exception($"HTTP request failed with status code {response.StatusCode} and message {response.ReasonPhrase}");
+                }
+            }
+
+            throw new Exception("Max retry attempts exceeded.");
         }
 
         /// <summary>
@@ -233,32 +259,41 @@ namespace QrCodev2
 
         public async Task<int> CreateLinkAsync(int currentNumero)
         {
-            var content = new MultipartFormDataContent
-            {
-                { new StringContent("https://mediapush.fr"), "location_url" },
-                { new StringContent(currentNumero.ToString()), "url" }
-            };
-
             var apiUrl = "https://www.qrcode.mediapush.fr/api/links";
+            int maxRetries = 5;  // Nombre maximum de tentatives
+            int retryDelay = 4000;  // Délai initial en millisecondes
+            int retryCount = 0;  // Compteur initial de tentatives
 
-            try
+            while (retryCount < maxRetries)
             {
+                // Créer un nouveau MultipartFormDataContent pour chaque requête
+                var content = new MultipartFormDataContent
+        {
+            { new StringContent("https://mediapush.fr"), "location_url" },
+            { new StringContent(currentNumero.ToString()), "url" }
+        };
+
                 HttpResponseMessage response = await _client.PostAsync(apiUrl, content);
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new Exception("Erreur : Merci de vérifier votre clé d'API ou qu'un QR code ne possède pas le même numéro");
-                }
-                response.EnsureSuccessStatusCode();
 
-                var responseBody = await response.Content.ReadAsStringAsync();
-                dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
-                return responseObject.data.id;
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    dynamic responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject(responseBody);
+                    return responseObject.data.id;
+                }
+                else if (response.StatusCode == (HttpStatusCode)429)  // Gestion du rate limiting
+                {
+                    await Task.Delay(retryDelay);  // Attendre le délai spécifié avant de réessayer
+                    retryDelay *= 2;  // Doublez le délai pour la prochaine tentative
+                    retryCount++;  // Incrémenter le compteur de tentatives
+                }
+                else
+                {
+                    throw new Exception($"HTTP request failed with status code {response.StatusCode} and message {response.ReasonPhrase}");
+                }
             }
-            catch (HttpRequestException ex)
-            {
-                Console.WriteLine($"API error: {ex.Message}");
-                throw;
-            }
+
+            throw new Exception("Max retry attempts exceeded.");  // Lancer une exception si le nombre maximal de tentatives est atteint
         }
 
         /// <summary>
