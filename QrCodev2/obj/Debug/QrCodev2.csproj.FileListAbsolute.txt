@@ -234,4 +234,3 @@ C:\Users\andre\source\repos\QrCode\QrCodev2\bin\Debug\Magick.Native-Q8-arm64.dll
 C:\Users\andre\source\repos\QrCode\QrCodev2\bin\Debug\Magick.Native-Q8-x86.dll
 C:\Users\andre\source\repos\QrCode\QrCodev2\bin\Debug\Magick.NET-Q8-AnyCPU.dll
 C:\Users\andre\source\repos\QrCode\QrCodev2\bin\Debug\Magick.NET-Q8-AnyCPU.xml
-C:\Users\andre\source\repos\QrCode\QrCodev2\obj\Debug\QrCodev2.csproj.AssemblyReference.cache
