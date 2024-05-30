@@ -48,6 +48,8 @@ namespace QrCodev2
             this.label5 = new System.Windows.Forms.Label();
             this.btn_Generer = new System.Windows.Forms.Button();
             this.grp_infos = new System.Windows.Forms.GroupBox();
+            this.lbl_API2 = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.btn_PNG = new System.Windows.Forms.Button();
             this.btn_SVG = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
@@ -59,8 +61,6 @@ namespace QrCodev2
             this.picture_box = new System.Windows.Forms.PictureBox();
             this.btn_api = new System.Windows.Forms.Button();
             this.lbl_api = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.lbl_API2 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.grp_infos.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nup_NbrExemplaire)).BeginInit();
@@ -267,6 +267,24 @@ namespace QrCodev2
             this.grp_infos.TabStop = false;
             this.grp_infos.Text = "Récapitulatif";
             // 
+            // lbl_API2
+            // 
+            this.lbl_API2.AutoSize = true;
+            this.lbl_API2.ForeColor = System.Drawing.Color.Red;
+            this.lbl_API2.Location = new System.Drawing.Point(523, 359);
+            this.lbl_API2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbl_API2.Name = "lbl_API2";
+            this.lbl_API2.Size = new System.Drawing.Size(193, 17);
+            this.lbl_API2.TabIndex = 29;
+            this.lbl_API2.Text = "Veuillez entrer une clé API (*)";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(723, 409);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(135, 23);
+            this.progressBar1.TabIndex = 29;
+            // 
             // btn_PNG
             // 
             this.btn_PNG.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
@@ -298,8 +316,9 @@ namespace QrCodev2
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(234, 17);
             this.label7.TabIndex = 26;
-            this.label7.Text = "QPDF v1.1.2 - mediapush.fr © 2024";
+            this.label7.Text = "QPDF v1.1.3 - mediapush.fr © 2024";
             this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
             // btn_Modifier
             // 
@@ -315,7 +334,7 @@ namespace QrCodev2
             // nup_NbrExemplaire
             // 
             this.nup_NbrExemplaire.Location = new System.Drawing.Point(173, 346);
-            this.nup_NbrExemplaire.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.nup_NbrExemplaire.Margin = new System.Windows.Forms.Padding(4);
             this.nup_NbrExemplaire.Name = "nup_NbrExemplaire";
             this.nup_NbrExemplaire.Size = new System.Drawing.Size(57, 22);
             this.nup_NbrExemplaire.TabIndex = 24;
@@ -388,24 +407,6 @@ namespace QrCodev2
             this.lbl_api.Size = new System.Drawing.Size(13, 17);
             this.lbl_api.TabIndex = 28;
             this.lbl_api.Text = "*";
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Location = new System.Drawing.Point(723, 409);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(135, 23);
-            this.progressBar1.TabIndex = 29;
-            // 
-            // lbl_API2
-            // 
-            this.lbl_API2.AutoSize = true;
-            this.lbl_API2.ForeColor = System.Drawing.Color.Red;
-            this.lbl_API2.Location = new System.Drawing.Point(523, 359);
-            this.lbl_API2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lbl_API2.Name = "lbl_API2";
-            this.lbl_API2.Size = new System.Drawing.Size(193, 17);
-            this.lbl_API2.TabIndex = 29;
-            this.lbl_API2.Text = "Veuillez entrer une clé API (*)";
             // 
             // Form1
             // 
