@@ -72,15 +72,21 @@ namespace QrCodev2
                 XGraphics gfx = XGraphics.FromPdfPage(page);
 
                 int plaquesPerLine = (int)((totalWidthCm - marginCm) / (imageWidthCm + marginCm));
+                int linesPerPage = (int)((totalHeightCm - marginCm) / (imageHeightCm + marginCm));
 
                 int currentRow = 0;
                 int currentCol = 0;
                 int plaqueNumber = int.Parse(txt_numDepart.Text);
 
+                // Calculate total number of plaques
+                int totalPlaques = dgv_recap.Rows.Cast<DataGridViewRow>()
+                                    .Where(row => row.Cells["colonneNombre"].Value != null && int.TryParse(row.Cells["colonneNombre"].Value.ToString(), out int _))
+                                    .Sum(row => int.Parse(row.Cells["colonneNombre"].Value.ToString()));
+
                 progressBar1.Visible = true;
                 progressBar1.Minimum = 0;
-                progressBar1.Value = 5;
-                progressBar1.Maximum = 100;
+                progressBar1.Value = 0;
+                progressBar1.Maximum = totalPlaques;
 
                 foreach (DataGridViewRow dgvRow in dgv_recap.Rows)
                 {
@@ -91,10 +97,21 @@ namespace QrCodev2
                         {
                             string color = dgvRow.Cells["colonneCouleur"].Value?.ToString() ?? "noir";
                             string style = dgvRow.Cells["colonneStyle"].Value?.ToString() ?? "square";
-                            XBrush brush = color == "blanc" ? XBrushes.White : XBrushes.Black;                   
+                            XBrush brush = color == "blanc" ? XBrushes.White : XBrushes.Black;
 
                             for (int i = 0; i < nombreExemplaires; i++)
                             {
+                                if (currentRow >= linesPerPage)
+                                {
+                                    // Add a new page
+                                    page = document.AddPage();
+                                    page.Width = XUnit.FromCentimeter(totalWidthCm);
+                                    page.Height = XUnit.FromCentimeter(totalHeightCm);
+                                    gfx = XGraphics.FromPdfPage(page);
+                                    currentRow = 0;
+                                    currentCol = 0;
+                                }
+
                                 double x = currentCol * (imageWidthCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
                                 double y = currentRow * (imageHeightCm * 28.3465 + marginCm * 28.3465) + marginCm * 28.3465;
 
@@ -106,7 +123,6 @@ namespace QrCodev2
 
                                 int linkId = await CreateLinkAsync(currentNumero);
                                 int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero);
-
 
                                 // Ajout du QR code avec redimensionnement
                                 XImage overlayImage = await GetQrCodeImageAsync(qrCodeId);
@@ -125,7 +141,10 @@ namespace QrCodev2
 
                                 plaqueNumber++;
 
-                                progressBar1.Value++;  // Incrémenter la barre de progression après chaque ligne traitée
+                                if (progressBar1.Value < progressBar1.Maximum)
+                                {
+                                    progressBar1.Value++;  // Incrémenter la barre de progression après chaque ligne traitée
+                                }
 
                                 currentCol++;
                                 if (currentCol >= plaquesPerLine)
@@ -154,6 +173,8 @@ namespace QrCodev2
             }
             progressBar1.Visible = false;
         }
+
+
 
         /// <summary>
         /// Méthode permettant de convertir le SVG en PDF
