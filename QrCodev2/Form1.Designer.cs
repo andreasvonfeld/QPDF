@@ -87,7 +87,7 @@ namespace QrCodev2
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox1.Size = new System.Drawing.Size(1144, 107);
+            this.groupBox1.Size = new System.Drawing.Size(986, 107);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Dimensions des plaques";
@@ -235,7 +235,7 @@ namespace QrCodev2
             // btn_Generer
             // 
             this.btn_Generer.ForeColor = System.Drawing.Color.Blue;
-            this.btn_Generer.Location = new System.Drawing.Point(1004, 346);
+            this.btn_Generer.Location = new System.Drawing.Point(841, 332);
             this.btn_Generer.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_Generer.Name = "btn_Generer";
             this.btn_Generer.Size = new System.Drawing.Size(135, 42);
@@ -262,7 +262,7 @@ namespace QrCodev2
             this.grp_infos.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.grp_infos.Name = "grp_infos";
             this.grp_infos.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.grp_infos.Size = new System.Drawing.Size(1144, 439);
+            this.grp_infos.Size = new System.Drawing.Size(986, 430);
             this.grp_infos.TabIndex = 1;
             this.grp_infos.TabStop = false;
             this.grp_infos.Text = "Récapitulatif";
@@ -271,7 +271,7 @@ namespace QrCodev2
             // 
             this.lbl_API2.AutoSize = true;
             this.lbl_API2.ForeColor = System.Drawing.Color.Red;
-            this.lbl_API2.Location = new System.Drawing.Point(523, 359);
+            this.lbl_API2.Location = new System.Drawing.Point(360, 345);
             this.lbl_API2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl_API2.Name = "lbl_API2";
             this.lbl_API2.Size = new System.Drawing.Size(193, 17);
@@ -280,7 +280,7 @@ namespace QrCodev2
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(723, 409);
+            this.progressBar1.Location = new System.Drawing.Point(560, 395);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(135, 23);
             this.progressBar1.TabIndex = 29;
@@ -288,7 +288,7 @@ namespace QrCodev2
             // btn_PNG
             // 
             this.btn_PNG.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.btn_PNG.Location = new System.Drawing.Point(723, 346);
+            this.btn_PNG.Location = new System.Drawing.Point(560, 332);
             this.btn_PNG.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_PNG.Name = "btn_PNG";
             this.btn_PNG.Size = new System.Drawing.Size(135, 42);
@@ -300,7 +300,7 @@ namespace QrCodev2
             // btn_SVG
             // 
             this.btn_SVG.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.btn_SVG.Location = new System.Drawing.Point(863, 346);
+            this.btn_SVG.Location = new System.Drawing.Point(700, 332);
             this.btn_SVG.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_SVG.Name = "btn_SVG";
             this.btn_SVG.Size = new System.Drawing.Size(135, 42);
@@ -312,11 +312,11 @@ namespace QrCodev2
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(904, 415);
+            this.label7.Location = new System.Drawing.Point(741, 401);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(234, 17);
             this.label7.TabIndex = 26;
-            this.label7.Text = "QPDF v1.1.5 - mediapush.fr © 2024";
+            this.label7.Text = "QPDF v1.1.6 - mediapush.fr © 2024";
             this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
@@ -358,7 +358,7 @@ namespace QrCodev2
             this.dgv_recap.Name = "dgv_recap";
             this.dgv_recap.RowHeadersWidth = 51;
             this.dgv_recap.RowTemplate.Height = 24;
-            this.dgv_recap.Size = new System.Drawing.Size(1131, 311);
+            this.dgv_recap.Size = new System.Drawing.Size(968, 303);
             this.dgv_recap.TabIndex = 0;
             this.dgv_recap.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_recap_CellContentClick);
             this.dgv_recap.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_recap_CellValueChanged);
@@ -366,7 +366,7 @@ namespace QrCodev2
             // 
             // btn_produits
             // 
-            this.btn_produits.Location = new System.Drawing.Point(1051, 14);
+            this.btn_produits.Location = new System.Drawing.Point(887, 13);
             this.btn_produits.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_produits.Name = "btn_produits";
             this.btn_produits.Size = new System.Drawing.Size(100, 33);
@@ -385,10 +385,13 @@ namespace QrCodev2
             this.picture_box.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picture_box.TabIndex = 25;
             this.picture_box.TabStop = false;
+            this.picture_box.Click += new System.EventHandler(this.picture_box_Click);
+            this.picture_box.MouseEnter += new System.EventHandler(this.picture_box_MouseEnter);
+            this.picture_box.MouseLeave += new System.EventHandler(this.picture_box_MouseLeave);
             // 
             // btn_api
             // 
-            this.btn_api.Location = new System.Drawing.Point(944, 14);
+            this.btn_api.Location = new System.Drawing.Point(780, 13);
             this.btn_api.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btn_api.Name = "btn_api";
             this.btn_api.Size = new System.Drawing.Size(100, 33);
@@ -401,7 +404,7 @@ namespace QrCodev2
             // 
             this.lbl_api.AutoSize = true;
             this.lbl_api.ForeColor = System.Drawing.Color.Red;
-            this.lbl_api.Location = new System.Drawing.Point(924, 22);
+            this.lbl_api.Location = new System.Drawing.Point(760, 21);
             this.lbl_api.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl_api.Name = "lbl_api";
             this.lbl_api.Size = new System.Drawing.Size(13, 17);
@@ -412,7 +415,7 @@ namespace QrCodev2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1165, 629);
+            this.ClientSize = new System.Drawing.Size(1005, 620);
             this.Controls.Add(this.lbl_api);
             this.Controls.Add(this.btn_api);
             this.Controls.Add(this.btn_produits);

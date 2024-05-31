@@ -12,6 +12,7 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using Svg;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 
 namespace QrCodev2
@@ -36,6 +37,8 @@ namespace QrCodev2
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
             produitsForm = new Produits(this);
             CheckApiKeyAndToggleButtons();
+            picture_box.MouseEnter += new EventHandler(picture_box_MouseEnter);
+            picture_box.MouseLeave += new EventHandler(picture_box_MouseLeave);
         }
 
         private void label1_Click(object sender, EventArgs e) { }
@@ -122,7 +125,7 @@ namespace QrCodev2
                                 string customUrl = $"https://www.qrcode.mediapush.fr/{currentNumero}";
 
                                 int linkId = await CreateLinkAsync(currentNumero);
-                                int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero);
+                                int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero, style);
 
                                 // Ajout du QR code avec redimensionnement
                                 XImage overlayImage = await GetQrCodeImageAsync(qrCodeId);
@@ -176,6 +179,7 @@ namespace QrCodev2
 
 
 
+
         /// <summary>
         /// Méthode permettant de convertir le SVG en PDF
         /// </summary>
@@ -215,7 +219,7 @@ namespace QrCodev2
         /// <param name="type"></param>
         /// <param name="numeroDepart"></param>
         /// <returns></returns>
-        public async Task<int> CreateQrCodeAsync(string name, string type, int numeroDepart)
+        public async Task<int> CreateQrCodeAsync(string name, string type, int numeroDepart, string style)
         {
             int maxRetries = 5; // Maximum number of retries
             int retryDelay = 4000; // Initial delay in milliseconds
@@ -227,7 +231,9 @@ namespace QrCodev2
                 var content = new MultipartFormDataContent {
             { new StringContent(name), "name" },
             { new StringContent(type), "type" },
-            { new StringContent($"https://www.qrcode.mediapush.fr/{numeroDepart}"), "url" }
+            { new StringContent($"https://www.qrcode.mediapush.fr/{numeroDepart}"), "url" },
+            { new StringContent(style), "style" }
+
         };
 
                 HttpResponseMessage response = await _client.PostAsync("https://www.qrcode.mediapush.fr/api/qr-codes", content);
@@ -781,10 +787,11 @@ namespace QrCodev2
                             {
                                 if (dgvRow.Cells["colonneNumDep"].Value != null && int.TryParse(dgvRow.Cells["colonneNumDep"].Value.ToString(), out int numeroDepart))
                                 {
+                                    string style = dgvRow.Cells["colonneStyle"].Value?.ToString() ?? "square"; // Obtenez le style ici
                                     for (int i = 0; i < nombreExemplaires; i++)
                                     {
                                         int currentNumero = numeroDepart + i;
-                                        int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero);
+                                        int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero, style);
 
 
                                         // Générer le fichier SVG pour le QR code
@@ -899,7 +906,7 @@ namespace QrCodev2
                                         int linkId = await CreateLinkAsync(currentNumero);
 
                                         // Create the QR code associated with the link
-                                        int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero);
+                                        int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero, style);
 
 
                                         // Generate the QR code in PNG with the selected color and style
@@ -966,6 +973,37 @@ namespace QrCodev2
         private void label7_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void picture_box_Click(object sender, EventArgs e)
+        {
+            string url = "https://www.qrcode.mediapush.fr/";
+            OpenUrl(url);
+        }
+        private void OpenUrl(string url)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open URL: {ex.Message}");
+            }
+        }
+
+        private void picture_box_MouseEnter(object sender, EventArgs e)
+        {
+            picture_box.Cursor = Cursors.Hand;
+        }
+
+        private void picture_box_MouseLeave(object sender, EventArgs e)
+        {
+            picture_box.Cursor = Cursors.Default;
         }
     }
 
