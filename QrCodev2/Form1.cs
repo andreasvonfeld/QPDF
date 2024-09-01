@@ -485,29 +485,18 @@ namespace QrCodev2
         /// </summary>
         private void DesactiverModifierBtn()
         {
-            bool enableNumericUpDown = false;
-
-            if (dgv_recap.Rows.Count > 0)
+            // Le bouton Modifier est activé uniquement si une ligne est sélectionnée dans le DataGridView
+            if (dgv_recap.SelectedRows.Count > 0)
             {
-                txt_numDepart.Enabled = dgv_recap.SelectedRows.Count > 0 && dgv_recap.SelectedRows[0].Index == 0;
-
-                if (dgv_recap.Rows[0].Cells["colonneNumDep"].Value == null || dgv_recap.Rows[0].Cells["colonneNumDep"].Value.ToString() == "")
-                {
-                    btn_Modifier.Enabled = false;
-                }
-                else
-                {
-                    btn_Modifier.Enabled = true;
-                }
-
-                enableNumericUpDown = true;
+                btn_Modifier.Enabled = true;
             }
             else
             {
-                txt_numDepart.Enabled = true;
+                btn_Modifier.Enabled = false;
             }
 
-            nup_NbrExemplaire.Enabled = enableNumericUpDown;
+            // Activer le NumericUpDown si une ligne est sélectionnée
+            nup_NbrExemplaire.Enabled = dgv_recap.SelectedRows.Count > 0;
         }
 
         private void dup_NbrExemplaire_SelectedItemChanged(object sender, EventArgs e) { }

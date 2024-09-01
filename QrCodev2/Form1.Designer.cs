@@ -316,7 +316,7 @@ namespace QrCodev2
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(234, 17);
             this.label7.TabIndex = 26;
-            this.label7.Text = "QPDF v1.1.6 - mediapush.fr © 2024";
+            this.label7.Text = "QPDF v1.1.7 - mediapush.fr © 2024";
             this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
@@ -335,6 +335,11 @@ namespace QrCodev2
             // 
             this.nup_NbrExemplaire.Location = new System.Drawing.Point(173, 346);
             this.nup_NbrExemplaire.Margin = new System.Windows.Forms.Padding(4);
+            this.nup_NbrExemplaire.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
             this.nup_NbrExemplaire.Name = "nup_NbrExemplaire";
             this.nup_NbrExemplaire.Size = new System.Drawing.Size(57, 22);
             this.nup_NbrExemplaire.TabIndex = 24;
