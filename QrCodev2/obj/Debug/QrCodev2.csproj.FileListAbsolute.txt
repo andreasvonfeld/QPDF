@@ -293,4 +293,3 @@ C:\Users\Andréas\source\repos\QPDFv.off\QrCodev2\obj\Debug\QrCodev2.csproj.Core
 C:\Users\Andréas\source\repos\QPDFv.off\QrCodev2\obj\Debug\QrCodev2.csproj.CopyComplete
 C:\Users\Andréas\source\repos\QPDFv.off\QrCodev2\obj\Debug\QrCodev2.exe
 C:\Users\Andréas\source\repos\QPDFv.off\QrCodev2\obj\Debug\QrCodev2.pdb
-C:\Users\Andréas\source\repos\QPDFv.off\QrCodev2\obj\Debug\QrCodev2.csproj.AssemblyReference.cache
