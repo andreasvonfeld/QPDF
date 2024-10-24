@@ -63,9 +63,9 @@ namespace QrCodev2.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap c2644f94cfda9ba79a25b8e737bc5748 {
+        internal static System.Drawing.Bitmap logo1_mediapush_8_400x72 {
             get {
-                object obj = ResourceManager.GetObject("c2644f94cfda9ba79a25b8e737bc5748", resourceCulture);
+                object obj = ResourceManager.GetObject("logo1-mediapush-8-400x72", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,19 +73,9 @@ namespace QrCodev2.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap c2644f94cfda9ba79a25b8e737bc57481 {
+        internal static System.Drawing.Bitmap logo1_mediapush_8_400x721 {
             get {
-                object obj = ResourceManager.GetObject("c2644f94cfda9ba79a25b8e737bc57481", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap mediapush {
-            get {
-                object obj = ResourceManager.GetObject("mediapush", resourceCulture);
+                object obj = ResourceManager.GetObject("logo1-mediapush-8-400x721", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -13,6 +13,7 @@ using PdfSharpCore.Pdf;
 using Svg;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 
 namespace QrCodev2
@@ -127,20 +128,59 @@ namespace QrCodev2
                                 int linkId = await CreateLinkAsync(currentNumero);
                                 int qrCodeId = await CreateQrCodeAsync(currentNumero.ToString(), "url", currentNumero, style);
 
-                                // Ajout du QR code avec redimensionnement
+                                // Vérifier si la plaque est "SFR.pdf"
+                                bool isSfrPlaque = Path.GetFileName(imagePath).Equals("SFR.pdf", StringComparison.OrdinalIgnoreCase);
+
+                                // Position et échelle personnalisées pour "SFR.pdf"
+                                double overlayWidth, overlayHeight, overlayX, overlayY;
+                                if (isSfrPlaque)
+                                {
+                                    // Spécifier l'échelle et la position en fonction du ratio pour SFR.pdf
+                                    overlayWidth = 74 * widthRatio; // Échelle personnalisée pour SFR.pdf
+                                    overlayHeight = 74 * heightRatio;
+
+                                    // Utilisation des ratios pour ajuster dynamiquement la position
+                                    overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - (20 * widthRatio);
+                                    overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - (46 * heightRatio); // Ajuster le décalage selon tes besoins
+                                }
+                                else
+                                {
+                                    // Valeurs par défaut pour les autres plaques
+                                    overlayWidth = 84 * widthRatio;
+                                    overlayHeight = 84 * heightRatio;
+                                    overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - (34.5 * widthRatio);
+                                    overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - (62.5 * heightRatio);
+                                }
+
+                                // Dessiner le QR code
                                 XImage overlayImage = await GetQrCodeImageAsync(qrCodeId);
-                                double overlayWidth = 84 * widthRatio; // largeur redimensionnée
-                                double overlayHeight = 84 * heightRatio; // hauteur redimensionnée
-                                double overlayX = x + (imageWidthCm * 28.3465) - overlayWidth - (34.5 * widthRatio); // position X ajustée
-                                double overlayY = y + (imageHeightCm * 28.3465) - overlayHeight - (62.5 * heightRatio); // position Y ajustée
                                 gfx.DrawImage(overlayImage, overlayX, overlayY, overlayWidth, overlayHeight);
 
-                                // Ajout du numéro de plaque avec redimensionnement
-                                XFont font = new XFont("Poppins SemiBold", 5.2 * heightRatio); // taille de police redimensionnée
+                                // Ajout du numéro de plaque (inchangé)
+                                XFont font = new XFont("Poppins SemiBold", 5.2 * heightRatio);
                                 XSize textSize = gfx.MeasureString(plaqueNumber.ToString(), font);
-                                double plaqueNumberX = x + (imageWidthCm * 28.3465) / 1.47 - textSize.Width / 2; // position X ajustée
-                                double plaqueNumberY = overlayY + overlayHeight + (10.5 * heightRatio); // position Y ajustée
+
+                                // Personnalisation de la position du texte pour "SFR.pdf"
+                                double plaqueNumberX, plaqueNumberY;
+                                if (isSfrPlaque)
+                                {
+                                    // Centrer le texte sous le QR code
+                                    plaqueNumberX = overlayX + (overlayWidth / 2) - (textSize.Width / 2); // Centrer sous le QR code
+
+                                    // Positionner le texte juste en dessous du QR code
+                                    plaqueNumberY = overlayY + overlayHeight + (5 * heightRatio); // Ajouter un léger décalage en dessous du QR code (ajustable)
+                                }
+                                else
+                                {
+                                    // Position par défaut pour les autres plaques
+                                    plaqueNumberX = x + (imageWidthCm * 28.3465) / 1.47 - textSize.Width / 2;
+                                    plaqueNumberY = overlayY + overlayHeight + (10.5 * heightRatio);
+                                }
+
+                                // Dessiner le numéro de plaque
                                 gfx.DrawString(plaqueNumber.ToString(), font, brush, plaqueNumberX, plaqueNumberY);
+
+
 
                                 plaqueNumber++;
 
@@ -993,6 +1033,11 @@ namespace QrCodev2
         private void picture_box_MouseLeave(object sender, EventArgs e)
         {
             picture_box.Cursor = Cursors.Default;
+        }
+
+        private void picture_box_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 
